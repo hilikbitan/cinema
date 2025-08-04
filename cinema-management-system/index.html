@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סינמה סיטי חדרה - דאשבורד</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+    <!-- Desktop Layout -->
+    <div class="app-layout">
+        <!-- Sidebar - Desktop Only -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🎬</div>
+                    <div>
+                        <div class="logo-text">סינמה סיטי</div>
+                        <div class="user-info">מנהל משמרת</div>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">ראשי</div>
+                    <a href="#" class="nav-item active" onclick="switchModule('dashboard')">
+                        <span class="nav-icon">🏠</span>
+                        דאשבורד
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchModule('analytics')">
+                        <span class="nav-icon">📊</span>
+                        אנליטיקה
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">תפעול יומי</div>
+                    <a href="#" class="nav-item" onclick="switchModule('checklists')">
+                        <span class="nav-icon">✅</span>
+                        צ'ק ליסטים
+                        <span class="nav-badge">7</span>
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchModule('inventory')">
+                        <span class="nav-icon">📦</span>
+                        ניהול מלאי
+                        <span class="nav-badge">3</span>
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchModule('staff')">
+                        <span class="nav-icon">👥</span>
+                        ניהול עובדים
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">מערכות</div>
+                    <a href="#" class="nav-item" onclick="switchModule('monitoring')">
+                        <span class="nav-icon">📱</span>
+                        ניטור מרחוק
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchModule('alerts')">
+                        <span class="nav-icon">🚨</span>
+                        התראות
+                        <span class="nav-badge">2</span>
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchModule('reports')">
+                        <span class="nav-icon">📋</span>
+                        דוחות
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    מערכת פעילה
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content - Desktop -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="page-title" id="pageTitle">
+                    🏠 דאשבורד ראשי
+                </div>
+                <div class="top-actions">
+                    <button class="action-btn">📤 ייצא דוח</button>
+                    <button class="action-btn">🔄 רענן נתונים</button>
+                    <button class="action-btn primary">+ הוסף משימה</button>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <div class="dashboard-widgets">
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-title">
+                                💰 הכנסות היום
+                            </div>
+                            <div class="widget-trend trend-up">+12%</div>
+                        </div>
+                        <div class="widget-value">₪47,230</div>
+                        <div class="widget-subtitle">מעודכן לפני 2 דקות</div>
+                    </div>
+                    
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-title">
+                                🎬 אולמות פעילים
+                            </div>
+                            <div class="widget-trend trend-up">9/12</div>
+                        </div>
+                        <div class="widget-value">75%</div>
+                        <div class="widget-subtitle">תפוסה ממוצעת</div>
+                    </div>
+                    
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-title">
+                                👥 עובדים במשמרת
+                            </div>
+                            <div class="widget-trend trend-down">-1</div>
+                        </div>
+                        <div class="widget-value">18</div>
+                        <div class="widget-subtitle">מ-19 מתוכננים</div>
+                    </div>
+                    
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-title">
+                                ⭐ שביעות רצון
+                            </div>
+                            <div class="widget-trend trend-up">+0.3</div>
+                        </div>
+                        <div class="widget-value">4.7</div>
+                        <div class="widget-subtitle">מ-5 כוכבים</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Layout -->
+    <div class="mobile-container">
+        <div class="mobile-header">
+            <div class="mobile-title">🎬 סינמה סיטי חדרה</div>
+            <div class="mobile-subtitle">מרכז בקרה ומעקב</div>
+        </div>
+
+        <div class="mobile-nav">
+            <div class="mobile-nav-grid">
+                <a href="#" class="mobile-nav-item active" onclick="mobileSwitch('dashboard')">
+                    <div class="mobile-nav-icon">🏠</div>
+                    <div class="mobile-nav-label">דאשבורד</div>
+                </a>
+                <a href="#" class="mobile-nav-item" onclick="mobileSwitch('tasks')">
+                    <div class="mobile-nav-icon">✅</div>
+                    <div class="mobile-nav-label">משימות</div>
+                </a>
+                <a href="#" class="mobile-nav-item" onclick="mobileSwitch('alerts')">
+                    <div class="mobile-nav-icon">🚨</div>
+                    <div class="mobile-nav-label">התראות</div>
+                </a>
+                <a href="#" class="mobile-nav-item" onclick="mobileSwitch('more')">
+                    <div class="mobile-nav-icon">⚙️</div>
+                    <div class="mobile-nav-label">עוד</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="mobile-modules">
+            <div class="mobile-module-card" onclick="openModule('checklists')">
+                <div class="mobile-module-icon">✅</div>
+                <div class="mobile-module-title">צ'ק ליסטים</div>
+                <div class="mobile-module-status">7 ממתינות</div>
+            </div>
+            
+            <div class="mobile-module-card" onclick="openModule('inventory')">
+                <div class="mobile-module-icon">📦</div>
+                <div class="mobile-module-title">ניהול מלאי</div>
+                <div class="mobile-module-status">3 לבדיקה</div>
+            </div>
+            
+            <div class="mobile-module-card" onclick="openModule('monitoring')">
+                <div class="mobile-module-icon">📱</div>
+                <div class="mobile-module-title">ניטור מרחוק</div>
+                <div class="mobile-module-status">הכל תקין</div>
+            </div>
+            
+            <div class="mobile-module-card" onclick="openModule('reports')">
+                <div class="mobile-module-icon">📊</div>
+                <div class="mobile-module-title">דוחות</div>
+                <div class="mobile-module-status">זמינים</div>
+            </div>
+            
+            <div class="mobile-module-card" onclick="openModule('staff')">
+                <div class="mobile-module-icon">👥</div>
+                <div class="mobile-module-title">עובדים</div>
+                <div class="mobile-module-status">18 במשמרת</div>
+            </div>
+            
+            <div class="mobile-module-card" onclick="openModule('alerts')">
+                <div class="mobile-module-icon">🚨</div>
+                <div class="mobile-module-title">התראות</div>
+                <div class="mobile-module-status">2 דחופות</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button - Mobile Only -->
+    <button class="fab" onclick="quickMenu()">
+        ⚡
+    </button>
+
+    <script>
+        function switchModule(module) {
+			const titles = {
+				'dashboard': '🏠 דאשבורד ראשי',
+				'checklists': '✅ צ\'ק ליסטים יומיים',
+				'inventory': '📦 ניהול מלאי',
+				'monitoring': '📱 ניטור מרחוק',
+				'alerts': '🚨 התראות ותקלות',
+				'reports': '📋 דוחות ואנליטיקה',
+				'staff': '👥 ניהול עובדים',
+				'analytics': '📊 אנליטיקה מתקדמת'
+			};
+			
+			document.getElementById('pageTitle').textContent = titles[module] || '🏠 דאשבורד ראשי';
+			
+			// עדכון פריט פעיל בתפריט
+			document.querySelectorAll('.nav-item').forEach(item => {
+				item.classList.remove('active');
+			});
+			
+			// ניווט למודול (רק אם זה לא דאשבורד)
+			if (module !== 'dashboard') {
+				const paths = {
+					'checklists': 'modules/checklists/index.html',
+					'inventory': 'modules/inventory/index.html',
+					'monitoring': 'modules/monitoring/index.html',
+					'alerts': 'modules/alerts/index.html',
+					'reports': 'modules/reports/index.html',
+					'staff': 'modules/staff/index.html',
+					'analytics': 'modules/analytics/index.html'
+				};
+				
+				if (paths[module]) {
+					window.location.href = paths[module];
+				}
+			}
+		}
+
+		function openModule(module) {
+			const paths = {
+				'checklists': 'modules/checklists/index.html',
+				'inventory': 'modules/inventory/index.html',
+				'monitoring': 'modules/monitoring/index.html',
+				'reports': 'modules/reports/index.html',
+				'staff': 'modules/staff/index.html',
+				'alerts': 'modules/alerts/index.html'
+			};
+			
+			if (paths[module]) {
+				window.location.href = paths[module];
+			} else {
+				alert(`מודול ${module} בפיתוח...`);
+			}
+		}
+
+		function mobileSwitch(module) {
+			// עדכון פריט פעיל בניווט המובייל
+			document.querySelectorAll('.mobile-nav-item').forEach(item => {
+				item.classList.remove('active');
+			});
+			
+			event.target.closest('.mobile-nav-item').classList.add('active');
+			
+			const modules = {
+				'dashboard': 'דאשבורד ראשי',
+				'tasks': 'modules/checklists/index.html',
+				'alerts': 'modules/alerts/index.html',
+				'more': 'תפריט נוסף'
+			};
+			
+			if (modules[module] && modules[module].includes('.html')) {
+				window.location.href = modules[module];
+			} else {
+				alert(`מעבר ל: ${modules[module]}`);
+			}
+		}
+
+        function openModule(module) {
+            const modules = {
+                'checklists': 'צ\'ק ליסטים יומיים',
+                'inventory': 'ניהול מלאי ורכש',
+                'monitoring': 'ניטור מרחוק',
+                'reports': 'דוחות ואנליטיקה',
+                'staff': 'ניהול עובדים',
+                'alerts': 'מרכז התראות'
+            };
+            
+            alert(`פותח מודול: ${modules[module]}`);
+        }
+
+        function quickMenu() {
+            alert('תפריט מהיר:\n• דווח תקלה\n• צור משימה\n• חפש\n• עזרה');
+        }
+
+        // עדכון נתונים בזמן אמת
+        function updateMetrics() {
+            const widgets = document.querySelectorAll('.widget-value');
+            widgets.forEach(widget => {
+                if (widget.textContent.includes('₪')) {
+                    const current = parseInt(widget.textContent.replace(/[^\d]/g, ''));
+                    const change = Math.floor(Math.random() * 1000) - 500;
+                    widget.textContent = `₪${(current + change).toLocaleString()}`;
+                }
+            });
+        }
+
+        setInterval(updateMetrics, 20000);
+
+        // זיהוי מגע למובייל
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.mobile-module-card').forEach(card => {
+                card.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                card.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        }
+    </script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

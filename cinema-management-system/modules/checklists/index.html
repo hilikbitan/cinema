@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צ'ק ליסטים - סינמה סיטי</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/checklists.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <span style="font-size: 2rem;">✅</span>
+                <div>
+                    <h1>צ'ק ליסטים דיגיטליים</h1>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">ניהול משימות ובדיקות יומיות</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="showHistory()">
+                    📋 היסטוריה
+                </button>
+                <button class="btn btn-secondary" onclick="exportReport()">
+                    📤 ייצא דוח
+                </button>
+                <button class="btn btn-primary" onclick="createNewChecklist()">
+                    ➕ צ'ק ליסט חדש
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value success">18</div>
+                <div class="stat-label">הושלמו היום</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning">7</div>
+                <div class="stat-label">ממתינות</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value error">2</div>
+                <div class="stat-label">באיחור</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value primary">92%</div>
+                <div class="stat-label">השלמה שבועית</div>
+            </div>
+        </div>
+
+        <!-- Checklist Types -->
+        <div class="checklist-types">
+            <!-- Event Checklist -->
+            <div class="checklist-type event" onclick="openChecklist('event')">
+                <div class="type-header">
+                    <div class="type-title">
+                        <div class="type-icon event">🎬</div>
+                        <div>
+                            <div>בדיקת מתחם אחרי אירועים</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
+                                ניקיון והכנה לאירוע הבא
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-status">
+                        <div class="status-indicator status-pending"></div>
+                        <span>בתהליך</span>
+                    </div>
+                </div>
+                <div class="type-description">
+                    בדיקת מתחם טרקלין, בר VIP, מטבח ומחסנים. החזרת ציוד למקום וניקיון יסודי.
+                </div>
+                <div class="type-progress">
+                    <div class="progress-bar event" style="width: 65%;"></div>
+                </div>
+                <div class="type-footer">
+                    <div class="tasks-count">13/20 משימות</div>
+                    <div class="last-update">עודכן לפני 15 דקות</div>
+                </div>
+            </div>
+
+            <!-- Daily Checklist -->
+            <div class="checklist-type daily" onclick="openChecklist('daily')">
+                <div class="type-header">
+                    <div class="type-title">
+                        <div class="type-icon daily">🏢</div>
+                        <div>
+                            <div>סגירה יומית במחלקות</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
+                                קופות, VIP, מזנון, סדרנים
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-status">
+                        <div class="status-indicator status-complete"></div>
+                        <span>הושלם</span>
+                    </div>
+                </div>
+                <div class="type-description">
+                    בדיקת קופות, נעילת מזנון, החזרת ציוד סדרנים ובדיקת כל המערכות.
+                </div>
+                <div class="type-progress">
+                    <div class="progress-bar daily" style="width: 100%;"></div>
+                </div>
+                <div class="type-footer">
+                    <div class="tasks-count">25/25 משימות</div>
+                    <div class="last-update">הושלם לפני שעה</div>
+                </div>
+            </div>
+
+            <!-- Cleaning Checklist -->
+            <div class="checklist-type cleaning" onclick="openChecklist('cleaning')">
+                <div class="type-header">
+                    <div class="type-title">
+                        <div class="type-icon cleaning">🧹</div>
+                        <div>
+                            <div>ניקיון מתחם בוקר</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
+                                אולמות, שירותים, לובי
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-status">
+                        <div class="status-indicator status-overdue"></div>
+                        <span>באיחור</span>
+                    </div>
+                </div>
+                <div class="type-description">
+                    ניקיון יסודי של כל האולמות, שירותים, מתחם הלובי ובדיקת ציוד הניקיון.
+                </div>
+                <div class="type-progress">
+                    <div class="progress-bar cleaning" style="width: 40%;"></div>
+                </div>
+                <div class="type-footer">
+                    <div class="tasks-count">6/15 משימות</div>
+                    <div class="last-update">איחור של 30 דקות</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Tasks -->
+        <div class="active-tasks">
+            <div class="section-title">
+                🔥 משימות דחופות
+            </div>
+            <div class="task-list">
+                <div class="task-item urgent">
+                    <div class="task-header">
+                        <div class="task-title">בדיקת מקרר מזנון B - טמפרטורה גבוהה</div>
+                        <div class="task-priority priority-high">דחוף</div>
+                    </div>
+                    <div class="task-details">
+                        מקרר מציג 8.5°C - חריגה מהטווח התקין. דרושה בדיקה מיידית.
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-time">נפתח לפני 10 דקות</div>
+                        <button class="task-action" onclick="handleTask('fridge')">טפל עכשיו</button>
+                    </div>
+                </div>
+
+                <div class="task-item overdue">
+                    <div class="task-header">
+                        <div class="task-title">ניקיון אולמות 3, 5, 7 - לא הושלם</div>
+                        <div class="task-priority priority-high">באיחור</div>
+                    </div>
+                    <div class="task-details">
+                        צ'ק ליסט ניקיון בוקר לא הושלם - 3 אולמות דורשים טיפול.
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-time">איחור של 25 דקות</div>
+                        <button class="task-action" onclick="handleTask('cleaning')">התחל ניקיון</button>
+                    </div>
+                </div>
+
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-title">החזרת ציוד סדרנים - סורקים וקשרים</div>
+                        <div class="task-priority priority-medium">רגיל</div>
+                    </div>
+                    <div class="task-details">
+                        החזרת הציוד למשרד מנה"ש והטענה לקראת המשמרת הבאה.
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-time">נותר 45 דקות</div>
+                        <button class="task-action" onclick="handleTask('equipment')">התחל משימה</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+		javascriptfunction openChecklist(type) {
+			const paths = {
+				'event': 'event-check.html',
+				'daily': 'daily-closing.html', 
+				'cleaning': 'cleaning.html'
+			};
+			
+			if (paths[type]) {
+				window.location.href = paths[type];
+			} else {
+				alert('צ\'ק ליסט לא נמצא');
+			}
+		}
+
+		// הוסף פונקציה חדשה לחזרה לדאשבורד
+		function goBack() {
+			window.location.href = '../../index.html';
+		}
+
+		// פונקציות נוספות לדף הצ'ק ליסטים
+		function createNewChecklist() {
+			alert('פותח אשף יצירת צ\'ק ליסט חדש...\n\nבעתיד כאן יהיה ממשק ליצירת צ\'ק ליסט מותאם אישית.');
+		}
+
+		function showHistory() {
+			alert('מציג היסטוריית צ\'ק ליסטים...\n\nבעתיד כאן תהיה טבלה עם כל הצ\'ק ליסטים שבוצעו.');
+		}
+
+		function exportReport() {
+			alert('מייצא דוח צ\'ק ליסטים...\n\nבעתיד כאן יהיה ייצוא ל-PDF או Excel.');
+		}
+
+        function handleTask(taskType) {
+            const tasks = {
+                'fridge': 'פותח מודול בדיקת מקרר - מדריך שלב אחר שלב',
+                'cleaning': 'פותח צ\'ק ליסט ניקיון אולמות',
+                'equipment': 'פותח רשימת ציוד להחזרה'
+            };
+            
+            alert(tasks[taskType]);
+        }
+
+        function createNewChecklist() {
+            alert('פותח אשף יצירת צ\'ק ליסט חדש:\n\n1. בחירת סוג צ\'ק ליסט\n2. הגדרת משימות\n3. הקצאת אחריות\n4. קביעת לוח זמנים');
+        }
+
+        function showHistory() {
+            alert('מציג היסטוריית צ\'ק ליסטים:\n\n• השבוע: 156 משימות הושלמו\n• החודש: 623 משימות\n• ממוצע השלמה: 94%\n• זמן ממוצע למשימה: 12 דקות');
+        }
+
+        function exportReport() {
+            alert('מייצא דוח צ\'ק ליסטים לפורמטים:\n\n📊 Excel\n📄 PDF\n📧 שליחה במייל\n☁️ שמירה בענן');
+        }
+
+        // עדכון נתונים בזמן אמת
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            stats.forEach(stat => {
+                if (!stat.textContent.includes('%')) {
+                    const current = parseInt(stat.textContent);
+                    const change = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+                    if (current + change >= 0) {
+                        stat.textContent = current + change;
+                    }
+                }
+            });
+        }
+
+        // עדכון כל 30 שניות
+        setInterval(updateStats, 30000);
+
+        // אנימציה לכרטיסים
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.checklist-type, .task-item');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        });
+    </script>
+    <script src="../../assets/js/main.js"></script>
+    <script src="assets/js/checklists.js"></script>
+</body>
+</html>
