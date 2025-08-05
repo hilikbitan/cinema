@@ -17,7 +17,7 @@
                     <div class="logo-icon">🎬</div>
                     <div>
                         <div class="logo-text">סינמה סיטי</div>
-                        <div class="user-info">מנהל משמרת</div>
+                        <div class="user-info" id="userRole">מנהל משמרת</div>
                     </div>
                 </div>
             </div>
@@ -69,12 +69,28 @@
                         דוחות
                     </a>
                 </div>
+                
+                <!-- הוספת כפתור יציאה -->
+                <div class="nav-section">
+                    <div class="nav-section-title">משתמש</div>
+                    <a href="#" class="nav-item" onclick="showUserProfile()">
+                        <span class="nav-icon">👤</span>
+                        <span id="sidebarUsername">פרופיל משתמש</span>
+                    </a>
+                    <a href="#" class="nav-item logout" onclick="logout()">
+                        <span class="nav-icon">🚪</span>
+                        יציאה מהמערכת
+                    </a>
+                </div>
             </nav>
             
             <div class="sidebar-footer">
                 <div class="status-indicator">
                     <div class="status-dot"></div>
                     מערכת פעילה
+                </div>
+                <div class="login-time" id="loginTime">
+                    מחובר מ: <span id="loginTimeValue"></span>
                 </div>
             </div>
         </div>
@@ -86,6 +102,9 @@
                     🏠 דאשבורד ראשי
                 </div>
                 <div class="top-actions">
+                    <div class="user-welcome" id="userWelcome">
+                        שלום, <span id="currentUser">משתמש</span>
+                    </div>
                     <button class="action-btn">📤 ייצא דוח</button>
                     <button class="action-btn">🔄 רענן נתונים</button>
                     <button class="action-btn primary">+ הוסף משימה</button>
@@ -138,6 +157,16 @@
                         <div class="widget-subtitle">מ-5 כוכבים</div>
                     </div>
                 </div>
+                
+                <!-- הוספת אזור התראות מהירות -->
+                <div class="quick-alerts">
+                    <h3>התראות אחרונות</h3>
+                    <div class="alert-item info">
+                        <span class="alert-icon">ℹ️</span>
+                        <span class="alert-text">משתמש <strong id="loginUserAlert">משתמש</strong> התחבר למערכת</span>
+                        <span class="alert-time" id="loginAlertTime">עכשיו</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -146,7 +175,7 @@
     <div class="mobile-container">
         <div class="mobile-header">
             <div class="mobile-title">🎬 סינמה סיטי חדרה</div>
-            <div class="mobile-subtitle">מרכז בקרה ומעקב</div>
+            <div class="mobile-subtitle">שלום, <span id="mobileUser">משתמש</span></div>
         </div>
 
         <div class="mobile-nav">
@@ -207,6 +236,13 @@
                 <div class="mobile-module-status">2 דחופות</div>
             </div>
         </div>
+        
+        <!-- הוספת כפתור יציאה במובייל -->
+        <div class="mobile-logout">
+            <button class="mobile-logout-btn" onclick="logout()">
+                🚪 יציאה מהמערכת
+            </button>
+        </div>
     </div>
 
     <!-- Floating Action Button - Mobile Only -->
@@ -215,97 +251,159 @@
     </button>
 
     <script>
+        // בדיקת התחברות בטעינת הדף
+        window.addEventListener('load', function() {
+            if (!localStorage.getItem('rememberMe') && !sessionStorage.getItem('isLoggedIn')) {
+                window.location.href = 'login.html';
+            } else {
+                // טעינת פרטי המשתמש
+                loadUserDetails();
+            }
+        });
+
+        // טעינת פרטי משתמש
+        function loadUserDetails() {
+            const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'משתמש';
+            
+            // עדכון שם המשתמש בכל המקומות
+            document.getElementById('currentUser').textContent = username;
+            document.getElementById('mobileUser').textContent = username;
+            document.getElementById('sidebarUsername').textContent = username;
+            document.getElementById('loginUserAlert').textContent = username;
+            
+            // עדכון זמן התחברות
+            const loginTime = new Date().toLocaleTimeString('he-IL', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('loginTimeValue').textContent = loginTime;
+            document.getElementById('loginAlertTime').textContent = loginTime;
+            
+            // הגדרת תפקיד (ניתן להרחיב בעתיד)
+            const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || 'מנהל משמרת';
+            document.getElementById('userRole').textContent = userRole;
+        }
+
+        // פונקציית יציאה מהמערכת
+        function logout() {
+            if (confirm('האם אתה בטוח שברצונך לצאת מהמערכת?')) {
+                // ניקוי כל הנתונים
+                localStorage.removeItem('rememberMe');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userRole');
+                sessionStorage.clear();
+                
+                // ניתוב לדף התחברות
+                window.location.href = 'login.html';
+            }
+        }
+
+        // הצגת פרופיל משתמש
+        function showUserProfile() {
+            const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'משתמש';
+            const role = localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || 'מנהל משמרת';
+            const loginTime = document.getElementById('loginTimeValue').textContent;
+            
+            alert(`פרטי משתמש:\n\nשם משתמש: ${username}\nתפקיד: ${role}\nמחובר מ: ${loginTime}`);
+        }
+
+        // פונקציות ניווט מקוריות
         function switchModule(module) {
-			const titles = {
-				'dashboard': '🏠 דאשבורד ראשי',
-				'checklists': '✅ צ\'ק ליסטים יומיים',
-				'inventory': '📦 ניהול מלאי',
-				'monitoring': '📱 ניטור מרחוק',
-				'alerts': '🚨 התראות ותקלות',
-				'reports': '📋 דוחות ואנליטיקה',
-				'staff': '👥 ניהול עובדים',
-				'analytics': '📊 אנליטיקה מתקדמת'
-			};
-			
-			document.getElementById('pageTitle').textContent = titles[module] || '🏠 דאשבורד ראשי';
-			
-			// עדכון פריט פעיל בתפריט
-			document.querySelectorAll('.nav-item').forEach(item => {
-				item.classList.remove('active');
-			});
-			
-			// ניווט למודול (רק אם זה לא דאשבורד)
-			if (module !== 'dashboard') {
-				const paths = {
-					'checklists': 'modules/checklists/index.html',
-					'inventory': 'modules/inventory/index.html',
-					'monitoring': 'modules/monitoring/index.html',
-					'alerts': 'modules/alerts/index.html',
-					'reports': 'modules/reports/index.html',
-					'staff': 'modules/staff/index.html',
-					'analytics': 'modules/analytics/index.html'
-				};
-				
-				if (paths[module]) {
-					window.location.href = paths[module];
-				}
-			}
-		}
-
-		function openModule(module) {
-			const paths = {
-				'checklists': 'modules/checklists/index.html',
-				'inventory': 'modules/inventory/index.html',
-				'monitoring': 'modules/monitoring/index.html',
-				'reports': 'modules/reports/index.html',
-				'staff': 'modules/staff/index.html',
-				'alerts': 'modules/alerts/index.html'
-			};
-			
-			if (paths[module]) {
-				window.location.href = paths[module];
-			} else {
-				alert(`מודול ${module} בפיתוח...`);
-			}
-		}
-
-		function mobileSwitch(module) {
-			// עדכון פריט פעיל בניווט המובייל
-			document.querySelectorAll('.mobile-nav-item').forEach(item => {
-				item.classList.remove('active');
-			});
-			
-			event.target.closest('.mobile-nav-item').classList.add('active');
-			
-			const modules = {
-				'dashboard': 'דאשבורד ראשי',
-				'tasks': 'modules/checklists/index.html',
-				'alerts': 'modules/alerts/index.html',
-				'more': 'תפריט נוסף'
-			};
-			
-			if (modules[module] && modules[module].includes('.html')) {
-				window.location.href = modules[module];
-			} else {
-				alert(`מעבר ל: ${modules[module]}`);
-			}
-		}
-
-        function openModule(module) {
-            const modules = {
-                'checklists': 'צ\'ק ליסטים יומיים',
-                'inventory': 'ניהול מלאי ורכש',
-                'monitoring': 'ניטור מרחוק',
-                'reports': 'דוחות ואנליטיקה',
-                'staff': 'ניהול עובדים',
-                'alerts': 'מרכז התראות'
+            const titles = {
+                'dashboard': '🏠 דאשבורד ראשי',
+                'checklists': '✅ צ\'ק ליסטים יומיים',
+                'inventory': '📦 ניהול מלאי',
+                'monitoring': '📱 ניטור מרחוק',
+                'alerts': '🚨 התראות ותקלות',
+                'reports': '📋 דוחות ואנליטיקה',
+                'staff': '👥 ניהול עובדים',
+                'analytics': '📊 אנליטיקה מתקדמת'
             };
             
-            alert(`פותח מודול: ${modules[module]}`);
+            document.getElementById('pageTitle').textContent = titles[module] || '🏠 דאשבורד ראשי';
+            
+            // עדכון פריט פעיל בתפריט
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // ניווט למודול (רק אם זה לא דאשבורד)
+            if (module !== 'dashboard') {
+                const paths = {
+                    'checklists': 'modules/checklists/index.html',
+                    'inventory': 'modules/inventory/index.html',
+                    'monitoring': 'modules/monitoring/index.html',
+                    'alerts': 'modules/alerts/index.html',
+                    'reports': 'modules/reports/index.html',
+                    'staff': 'modules/staff/index.html',
+                    'analytics': 'modules/analytics/index.html'
+                };
+                
+                if (paths[module]) {
+                    window.location.href = paths[module];
+                }
+            }
+        }
+
+        function openModule(module) {
+            const paths = {
+                'checklists': 'modules/checklists/index.html',
+                'inventory': 'modules/inventory/index.html',
+                'monitoring': 'modules/monitoring/index.html',
+                'reports': 'modules/reports/index.html',
+                'staff': 'modules/staff/index.html',
+                'alerts': 'modules/alerts/index.html'
+            };
+            
+            if (paths[module]) {
+                window.location.href = paths[module];
+            } else {
+                alert(`מודול ${module} בפיתוח...`);
+            }
+        }
+
+        function mobileSwitch(module) {
+            // עדכון פריט פעיל בניווט המובייל
+            document.querySelectorAll('.mobile-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            event.target.closest('.mobile-nav-item').classList.add('active');
+            
+            const modules = {
+                'dashboard': 'דאשבורד ראשי',
+                'tasks': 'modules/checklists/index.html',
+                'alerts': 'modules/alerts/index.html',
+                'more': 'showMoreMenu()'
+            };
+            
+            if (module === 'more') {
+                showMoreMenu();
+            } else if (modules[module] && modules[module].includes('.html')) {
+                window.location.href = modules[module];
+            }
+        }
+
+        // תפריט נוסף במובייל
+        function showMoreMenu() {
+            const menu = `תפריט נוסף:\n
+• 📊 אנליטיקה
+• 📋 דוחות
+• 👤 פרופיל משתמש
+• 🚪 יציאה מהמערכת\n
+בחר פעולה:`;
+            
+            const choice = prompt(menu);
+            if (choice && choice.includes('יציאה')) {
+                logout();
+            } else if (choice && choice.includes('פרופיל')) {
+                showUserProfile();
+            }
         }
 
         function quickMenu() {
-            alert('תפריט מהיר:\n• דווח תקלה\n• צור משימה\n• חפש\n• עזרה');
+            const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'משתמש';
+            alert(`תפריט מהיר - ${username}:\n• דווח תקלה\n• צור משימה\n• חפש\n• עזרה`);
         }
 
         // עדכון נתונים בזמן אמת
@@ -337,6 +435,119 @@
             });
         }
     </script>
+    
+    <!-- הוספת סגנונות לאלמנטים החדשים -->
+    <style>
+        /* סגנונות למשתמש */
+        .user-welcome {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-welcome #currentUser {
+            font-weight: 600;
+            color: #e94560;
+        }
+        
+        /* סגנונות לכפתור יציאה */
+        .nav-item.logout {
+            color: #ff6b6b;
+            margin-top: auto;
+        }
+        
+        .nav-item.logout:hover {
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        /* זמן התחברות */
+        .login-time {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        /* התראות מהירות */
+        .quick-alerts {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .quick-alerts h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .alert-item.info {
+            border-right: 3px solid #3498db;
+        }
+        
+        .alert-icon {
+            font-size: 20px;
+        }
+        
+        .alert-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .alert-time {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* כפתור יציאה במובייל */
+        .mobile-logout {
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .mobile-logout-btn {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-logout-btn:hover {
+            background: rgba(255, 107, 107, 0.2);
+        }
+        
+        /* תיקון למובייל */
+        @media (max-width: 768px) {
+            .user-welcome {
+                display: none;
+            }
+            
+            .top-actions {
+                gap: 8px;
+            }
+        }
+    </style>
+    
     <script src="assets/js/main.js"></script>
     <script src="assets/js/dashboard.js"></script>
 </body>

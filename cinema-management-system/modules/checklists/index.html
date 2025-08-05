@@ -19,6 +19,9 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button class="btn btn-secondary" onclick="goBack()">
+                    → חזרה לדאשבורד
+                </button>
                 <button class="btn btn-secondary" onclick="showHistory()">
                     📋 היסטוריה
                 </button>
@@ -195,37 +198,45 @@
     </div>
 
     <script>
-		javascriptfunction openChecklist(type) {
-			const paths = {
-				'event': 'event-check.html',
-				'daily': 'daily-closing.html', 
-				'cleaning': 'cleaning.html'
-			};
-			
-			if (paths[type]) {
-				window.location.href = paths[type];
-			} else {
-				alert('צ\'ק ליסט לא נמצא');
-			}
-		}
+        // בדיקת התחברות
+        window.addEventListener('load', function() {
+            if (!localStorage.getItem('rememberMe') && !sessionStorage.getItem('isLoggedIn')) {
+                window.location.href = '../../login.html';
+            }
+        });
 
-		// הוסף פונקציה חדשה לחזרה לדאשבורד
-		function goBack() {
-			window.location.href = '../../index.html';
-		}
+        // פונקציה לפתיחת צ'ק ליסט
+        function openChecklist(type) {
+            const paths = {
+                'event': 'event-check.html',
+                'daily': 'daily-closing.html', 
+                'cleaning': 'cleaning.html'
+            };
+            
+            if (paths[type]) {
+                window.location.href = paths[type];
+            } else {
+                alert('צ\'ק ליסט לא נמצא');
+            }
+        }
 
-		// פונקציות נוספות לדף הצ'ק ליסטים
-		function createNewChecklist() {
-			alert('פותח אשף יצירת צ\'ק ליסט חדש...\n\nבעתיד כאן יהיה ממשק ליצירת צ\'ק ליסט מותאם אישית.');
-		}
+        // פונקציה לחזרה לדאשבורד
+        function goBack() {
+            window.location.href = '../../index.html';
+        }
 
-		function showHistory() {
-			alert('מציג היסטוריית צ\'ק ליסטים...\n\nבעתיד כאן תהיה טבלה עם כל הצ\'ק ליסטים שבוצעו.');
-		}
+        // פונקציות נוספות לדף הצ'ק ליסטים
+        function createNewChecklist() {
+            alert('פותח אשף יצירת צ\'ק ליסט חדש...\n\nבעתיד כאן יהיה ממשק ליצירת צ\'ק ליסט מותאם אישית.');
+        }
 
-		function exportReport() {
-			alert('מייצא דוח צ\'ק ליסטים...\n\nבעתיד כאן יהיה ייצוא ל-PDF או Excel.');
-		}
+        function showHistory() {
+            alert('מציג היסטוריית צ\'ק ליסטים...\n\nבעתיד כאן תהיה טבלה עם כל הצ\'ק ליסטים שבוצעו.');
+        }
+
+        function exportReport() {
+            alert('מייצא דוח צ\'ק ליסטים...\n\nבעתיד כאן יהיה ייצוא ל-PDF או Excel.');
+        }
 
         function handleTask(taskType) {
             const tasks = {
@@ -235,18 +246,6 @@
             };
             
             alert(tasks[taskType]);
-        }
-
-        function createNewChecklist() {
-            alert('פותח אשף יצירת צ\'ק ליסט חדש:\n\n1. בחירת סוג צ\'ק ליסט\n2. הגדרת משימות\n3. הקצאת אחריות\n4. קביעת לוח זמנים');
-        }
-
-        function showHistory() {
-            alert('מציג היסטוריית צ\'ק ליסטים:\n\n• השבוע: 156 משימות הושלמו\n• החודש: 623 משימות\n• ממוצע השלמה: 94%\n• זמן ממוצע למשימה: 12 דקות');
-        }
-
-        function exportReport() {
-            alert('מייצא דוח צ\'ק ליסטים לפורמטים:\n\n📊 Excel\n📄 PDF\n📧 שליחה במייל\n☁️ שמירה בענן');
         }
 
         // עדכון נתונים בזמן אמת
@@ -281,6 +280,6 @@
         });
     </script>
     <script src="../../assets/js/main.js"></script>
-    <script src="assets/js/checklists.js"></script>
+    <!-- הסרתי את הקריאה ל-checklists.js כי הוא גורם לשגיאה וכבר יש את כל הפונקציות כאן -->
 </body>
 </html>
