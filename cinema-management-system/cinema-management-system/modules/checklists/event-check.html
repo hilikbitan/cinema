@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בדיקת מתחם אחרי אירוע - סינמה סיטי</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <style>
+        body {
+            background-color: #0f0f1e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* כותרת */
+        .header {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #b4b4b4;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560, #f37121);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* פרטי אירוע */
+        .event-info {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #b4b4b4;
+        }
+
+        .info-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 14px;
+        }
+
+        /* התקדמות כללית */
+        .progress-section {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .progress-percentage {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e94560;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #f37121);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #b4b4b4;
+        }
+
+        /* קטגוריות */
+        .categories {
+            display: grid;
+            gap: 20px;
+        }
+
+        .category {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .category:hover {
+            border-color: #e94560;
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.2);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .category-icon {
+            font-size: 28px;
+        }
+
+        .category-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff9800;
+        }
+
+        .status-indicator.completed {
+            background: #4caf50;
+        }
+
+        .category-progress {
+            font-size: 14px;
+            color: #b4b4b4;
+        }
+
+        /* משימות */
+        .tasks-list {
+            display: grid;
+            gap: 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .category.expanded .tasks-list {
+            max-height: 2000px;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .task-item.completed {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+
+        .task-item.completed .task-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-text {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .task-note {
+            font-size: 12px;
+            color: #b4b4b4;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .task-item:hover .task-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* הערות */
+        .notes-section {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notes-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            color: white;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        /* כפתורי פעולה תחתיים */
+        .bottom-actions {
+            position: sticky;
+            bottom: 0;
+            background: #0f0f1e;
+            padding: 20px 0;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .actions-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* רספונסיביות */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .progress-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .actions-container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .actions-container > * {
+                width: 100%;
+            }
+        }
+
+        /* אנימציות */
+        @keyframes checkIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .task-item.checking .task-checkbox {
+            animation: checkIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- כותרת -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-title">
+                    <span style="font-size: 32px;">🎬</span>
+                    <div>
+                        <h1>בדיקת מתחם אחרי אירוע</h1>
+                        <div class="header-subtitle">ניקיון והכנת המתחם לאירוע הבא</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="goBack()">
+                        → חזרה לרשימה
+                    </button>
+                    <button class="btn btn-primary" onclick="saveChecklist()">
+                        💾 שמור ושלח
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- פרטי אירוע -->
+        <div class="event-info">
+            <div class="info-item">
+                <label class="info-label">תאריך:</label>
+                <input type="date" class="info-input" id="eventDate" value="">
+            </div>
+            <div class="info-item">
+                <label class="info-label">שם מנה"ש:</label>
+                <input type="text" class="info-input" id="managerName" placeholder="הזן שם מנהל משמרת">
+            </div>
+            <div class="info-item">
+                <label class="info-label">סוג אירוע:</label>
+                <select class="info-input" id="eventType">
+                    <option value="">בחר סוג אירוע</option>
+                    <option value="birthday">יום הולדת</option>
+                    <option value="corporate">אירוע חברה</option>
+                    <option value="premiere">בכורה</option>
+                    <option value="other">אחר</option>
+                </select>
+            </div>
+            <div class="info-item">
+                <label class="info-label">שעת סיום אירוע:</label>
+                <input type="time" class="info-input" id="eventEndTime">
+            </div>
+        </div>
+
+        <!-- התקדמות כללית -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <div class="progress-title">התקדמות כללית</div>
+                <div class="progress-percentage" id="totalProgress">0%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTasks">0</div>
+                    <div class="stat-label">סה"כ משימות</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="completedTasks">0</div>
+                    <div class="stat-label">הושלמו</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="remainingTasks">0</div>
+                    <div class="stat-label">נותרו</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="estimatedTime">45</div>
+                    <div class="stat-label">דקות משוער</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- קטגוריות -->
+        <div class="categories">
+            <!-- טרקלין -->
+            <div class="category expanded" id="category-lounge">
+                <div class="category-header" onclick="toggleCategory('lounge')">
+                    <div class="category-title">
+                        <span class="category-icon">🏛️</span>
+                        <span>טרקלין</span>
+                    </div>
+                    <div class="category-status">
+                        <span class="category-progress" id="lounge-progress">0/11 משימות</span>
+                        <span class="status-indicator" id="lounge-status"></span>
+                    </div>
+                </div>
+                <div class="tasks-list">
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">בוצ'רים - ניקיון והחזרה לקופסאות איחסון</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">פרגודים - החזרה לטכני 5/4 ובדיקה שחזרו בצורה מסודרת</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">שולחנות רישום - מפות: קיפול/כביסה, החזרה לטכני 2</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">שילוט/חבלול - החזרת עמודי שילוט וחבלול למקומות</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">שולחנות וכיסאות - ניקיון והחזרת כל הכיסאות האדומים והשולחנות למסדרון אולמות</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">כיבוי מזגן מתחם VIP</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- בר VIP -->
+            <div class="category" id="category-bar">
+                <div class="category-header" onclick="toggleCategory('bar')">
+                    <div class="category-title">
+                        <span class="category-icon">🍷</span>
+                        <span>בר VIP</span>
+                    </div>
+                    <div class="category-status">
+                        <span class="category-progress" id="bar-progress">0/5 משימות</span>
+                        <span class="status-indicator" id="bar-status"></span>
+                    </div>
+                </div>
+                <div class="tasks-list">
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">דלפק בר - ניקיון וסדר</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">סגירת מכונת קפה</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">מקרר ומקפיא - מילוי סחורה, החזרת חלב למקרר במטבח</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">פח זבל - החלפת שקית ובדיקה שהפח נקי</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- מטבח VIP -->
+            <div class="category" id="category-kitchen">
+                <div class="category-header" onclick="toggleCategory('kitchen')">
+                    <div class="category-title">
+                        <span class="category-icon">👨‍🍳</span>
+                        <span>מטבח VIP</span>
+                    </div>
+                    <div class="category-status">
+                        <span class="category-progress" id="kitchen-progress">0/13 משימות</span>
+                        <span class="status-indicator" id="kitchen-status"></span>
+                    </div>
+                </div>
+                <div class="tasks-list">
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">ארון חימום + תנורים - ניקיון, העברת מאפים שנותרו לחדר עובדים</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">מעבר נירוסטה על התנורים והמדפים</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">לוקרים - בדיקת סידור ציוד</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">מקררים - FIFO, ניקיון. במידה ונשאר אוכל - לשאול מה לעשות עם הכמויות</div>
+                            <div class="task-note">חשוב: לבדוק תוקף ולארגן לפי FIFO</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">היטר - בדיקת ניקיון</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">כלים - סדר + בדיקת שטיפת וייבוש כלים + החזרתם למדפים</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">בדיקת דיספנסרים - שאין בפנים מיץ או נוזלים אחרים והדיספנסר נקי ויבש</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">עגלת מגשים - בדיקת ניקיון של העגלה והמגשים</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">דלפק וכיורים - ניקיון</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">פח זבל - החלפת שקית ובדיקה שהפח נקי</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">ניקיון תעלות ורצפה (לבדוק שאין אוכל זרוק על הרצפה)</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">כיבוי מזגן ואורות + נעילת מטבח</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- מחסן מטבח VIP -->
+            <div class="category" id="category-storage">
+                <div class="category-header" onclick="toggleCategory('storage')">
+                    <div class="category-title">
+                        <span class="category-icon">📦</span>
+                        <span>מחסן מטבח VIP</span>
+                    </div>
+                    <div class="category-status">
+                        <span class="category-progress" id="storage-progress">0/3 משימות</span>
+                        <span class="status-indicator" id="storage-status"></span>
+                    </div>
+                </div>
+                <div class="tasks-list">
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">בדיקת סידור קרטונים (לא זרוקים על הרצפה)</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">במידה ויש קרטונים ריקים - לזרוק</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                    <div class="task-item" onclick="toggleTask(this)">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-text">ניקיון תעלות ורצפה</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn" onclick="addNote(event, this)" title="הוסף הערה">📝</button>
+                            <button class="action-btn" onclick="reportIssue(event, this)" title="דווח על תקלה">⚠️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- הערות כלליות -->
+        <div class="notes-section">
+            <div class="notes-title">הערות כלליות</div>
+            <textarea class="notes-textarea" id="generalNotes" placeholder="הוסף הערות כלליות לבדיקה..."></textarea>
+        </div>
+
+        <!-- כפתורי פעולה תחתיים -->
+        <div class="bottom-actions">
+            <div class="actions-container">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="resetChecklist()">
+                        🔄 אפס רשימה
+                    </button>
+                    <button class="btn btn-secondary" onclick="printChecklist()">
+                        🖨️ הדפס
+                    </button>
+                </div>
+                <button class="btn btn-primary" onclick="completeChecklist()">
+                    ✅ סיים בדיקה
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // הגדרת תאריך נוכחי
+        document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+
+        // מצב גלובלי
+        let checklistState = {
+            totalTasks: 0,
+            completedTasks: 0,
+            categories: {
+                lounge: { total: 6, completed: 0 },
+                bar: { total: 4, completed: 0 },
+                kitchen: { total: 12, completed: 0 },
+                storage: { total: 3, completed: 0 }
+            }
+        };
+
+        // אתחול
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChecklist();
+            updateProgress();
+        });
+
+        // אתחול צ'ק ליסט
+        function initializeChecklist() {
+            // ספירת משימות
+            const allTasks = document.querySelectorAll('.task-item');
+            checklistState.totalTasks = allTasks.length;
+            
+            // עדכון מספרים
+            document.getElementById('totalTasks').textContent = checklistState.totalTasks;
+            document.getElementById('remainingTasks').textContent = checklistState.totalTasks;
+            
+            // בדיקה אם יש נתונים שמורים
+            loadSavedState();
+        }
+
+        // טוגל קטגוריה
+        function toggleCategory(categoryId) {
+            const category = document.getElementById(`category-${categoryId}`);
+            category.classList.toggle('expanded');
+        }
+
+        // טוגל משימה
+        function toggleTask(taskElement) {
+            taskElement.classList.toggle('completed');
+            taskElement.classList.add('checking');
+            
+            setTimeout(() => {
+                taskElement.classList.remove('checking');
+            }, 300);
+            
+            updateProgress();
+            saveState();
+        }
+
+        // עדכון התקדמות
+        function updateProgress() {
+            // ספירת משימות שהושלמו
+            const completedTasks = document.querySelectorAll('.task-item.completed');
+            checklistState.completedTasks = completedTasks.length;
+            
+            // עדכון מספרים
+            document.getElementById('completedTasks').textContent = checklistState.completedTasks;
+            document.getElementById('remainingTasks').textContent = checklistState.totalTasks - checklistState.completedTasks;
+            
+            // חישוב אחוזים
+            const percentage = Math.round((checklistState.completedTasks / checklistState.totalTasks) * 100);
+            document.getElementById('totalProgress').textContent = percentage + '%';
+            document.getElementById('progressBar').style.width = percentage + '%';
+            
+            // עדכון לפי קטגוריות
+            updateCategoryProgress();
+        }
+
+        // עדכון התקדמות קטגוריות
+        function updateCategoryProgress() {
+            const categories = ['lounge', 'bar', 'kitchen', 'storage'];
+            
+            categories.forEach(categoryId => {
+                const category = document.getElementById(`category-${categoryId}`);
+                const tasks = category.querySelectorAll('.task-item');
+                const completedTasks = category.querySelectorAll('.task-item.completed');
+                
+                // עדכון טקסט
+                document.getElementById(`${categoryId}-progress`).textContent = 
+                    `${completedTasks.length}/${tasks.length} משימות`;
+                
+                // עדכון סטטוס
+                const statusIndicator = document.getElementById(`${categoryId}-status`);
+                if (completedTasks.length === tasks.length) {
+                    statusIndicator.classList.add('completed');
+                } else {
+                    statusIndicator.classList.remove('completed');
+                }
+                
+                // עדכון מצב
+                checklistState.categories[categoryId] = {
+                    total: tasks.length,
+                    completed: completedTasks.length
+                };
+            });
+        }
+
+        // הוספת הערה
+        function addNote(event, button) {
+            event.stopPropagation();
+            const taskItem = button.closest('.task-item');
+            const taskText = taskItem.querySelector('.task-text').textContent;
+            
+            const note = prompt(`הוסף הערה למשימה:\n${taskText}`);
+            if (note) {
+                // יצירת או עדכון הערה
+                let noteElement = taskItem.querySelector('.task-note');
+                if (!noteElement) {
+                    noteElement = document.createElement('div');
+                    noteElement.className = 'task-note';
+                    taskItem.querySelector('.task-content').appendChild(noteElement);
+                }
+                noteElement.textContent = `הערה: ${note}`;
+                saveState();
+            }
+        }
+
+        // דיווח תקלה
+        function reportIssue(event, button) {
+            event.stopPropagation();
+            const taskItem = button.closest('.task-item');
+            const taskText = taskItem.querySelector('.task-text').textContent;
+            
+            const issue = prompt(`דווח על תקלה במשימה:\n${taskText}`);
+            if (issue) {
+                // סימון כתקלה
+                taskItem.style.borderColor = '#ff6b6b';
+                taskItem.style.background = 'rgba(255, 107, 107, 0.1)';
+                
+                // הוספת הערת תקלה
+                let noteElement = taskItem.querySelector('.task-note');
+                if (!noteElement) {
+                    noteElement = document.createElement('div');
+                    noteElement.className = 'task-note';
+                    taskItem.querySelector('.task-content').appendChild(noteElement);
+                }
+                noteElement.textContent = `⚠️ תקלה: ${issue}`;
+                noteElement.style.color = '#ff6b6b';
+                
+                saveState();
+            }
+        }
+
+        // שמירת מצב
+        function saveState() {
+            const state = {
+                date: document.getElementById('eventDate').value,
+                manager: document.getElementById('managerName').value,
+                eventType: document.getElementById('eventType').value,
+                endTime: document.getElementById('eventEndTime').value,
+                tasks: [],
+                notes: document.getElementById('generalNotes').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // שמירת מצב משימות
+            document.querySelectorAll('.task-item').forEach((task, index) => {
+                state.tasks.push({
+                    index: index,
+                    completed: task.classList.contains('completed'),
+                    note: task.querySelector('.task-note')?.textContent || '',
+                    hasIssue: task.style.borderColor === 'rgb(255, 107, 107)'
+                });
+            });
+            
+            localStorage.setItem('eventChecklist_current', JSON.stringify(state));
+        }
+
+        // טעינת מצב שמור
+        function loadSavedState() {
+            const savedState = localStorage.getItem('eventChecklist_current');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                
+                // שחזור פרטי אירוע
+                document.getElementById('eventDate').value = state.date || '';
+                document.getElementById('managerName').value = state.manager || '';
+                document.getElementById('eventType').value = state.eventType || '';
+                document.getElementById('eventEndTime').value = state.endTime || '';
+                document.getElementById('generalNotes').value = state.notes || '';
+                
+                // שחזור משימות
+                const tasks = document.querySelectorAll('.task-item');
+                state.tasks.forEach(taskState => {
+                    if (tasks[taskState.index]) {
+                        if (taskState.completed) {
+                            tasks[taskState.index].classList.add('completed');
+                        }
+                        if (taskState.note) {
+                            const noteElement = document.createElement('div');
+                            noteElement.className = 'task-note';
+                            noteElement.textContent = taskState.note;
+                            if (taskState.hasIssue) {
+                                noteElement.style.color = '#ff6b6b';
+                                tasks[taskState.index].style.borderColor = '#ff6b6b';
+                                tasks[taskState.index].style.background = 'rgba(255, 107, 107, 0.1)';
+                            }
+                            tasks[taskState.index].querySelector('.task-content').appendChild(noteElement);
+                        }
+                    }
+                });
+                
+                updateProgress();
+            }
+        }
+
+        // איפוס צ'ק ליסט
+        function resetChecklist() {
+            if (confirm('האם אתה בטוח שברצונך לאפס את הצ\'ק ליסט?')) {
+                // ניקוי שדות
+                document.getElementById('managerName').value = '';
+                document.getElementById('eventType').value = '';
+                document.getElementById('eventEndTime').value = '';
+                document.getElementById('generalNotes').value = '';
+                
+                // ניקוי משימות
+                document.querySelectorAll('.task-item').forEach(task => {
+                    task.classList.remove('completed');
+                    task.style.borderColor = '';
+                    task.style.background = '';
+                    const note = task.querySelector('.task-note');
+                    if (note) note.remove();
+                });
+                
+                // ניקוי storage
+                localStorage.removeItem('eventChecklist_current');
+                
+                updateProgress();
+            }
+        }
+
+        // הדפסת צ'ק ליסט
+        function printChecklist() {
+            window.print();
+        }
+
+        // סיום בדיקה
+        function completeChecklist() {
+            if (checklistState.completedTasks < checklistState.totalTasks) {
+                if (!confirm(`נותרו ${checklistState.totalTasks - checklistState.completedTasks} משימות לא מסומנות.\nהאם להמשיך בכל זאת?`)) {
+                    return;
+                }
+            }
+            
+            saveChecklist();
+        }
+
+        // שמירת צ'ק ליסט
+        function saveChecklist() {
+            const checklistData = {
+                type: 'event-check',
+                date: document.getElementById('eventDate').value,
+                manager: document.getElementById('managerName').value,
+                eventType: document.getElementById('eventType').value,
+                endTime: document.getElementById('eventEndTime').value,
+                completedTasks: checklistState.completedTasks,
+                totalTasks: checklistState.totalTasks,
+                categories: checklistState.categories,
+                notes: document.getElementById('generalNotes').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // שמירה בהיסטוריה
+            const history = JSON.parse(localStorage.getItem('checklistHistory') || '[]');
+            history.unshift(checklistData);
+            localStorage.setItem('checklistHistory', JSON.stringify(history.slice(0, 100))); // שמור עד 100 רשומות
+            
+            // ניקוי צ'ק ליסט נוכחי
+            localStorage.removeItem('eventChecklist_current');
+            
+            alert('הצ\'ק ליסט נשמר בהצלחה!');
+            goBack();
+        }
+
+        // חזרה לרשימה
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <style>
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .header-actions,
+            .task-actions,
+            .bottom-actions {
+                display: none !important;
+            }
+            
+            .task-item {
+                page-break-inside: avoid;
+            }
+            
+            .category {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</body>
+</html>

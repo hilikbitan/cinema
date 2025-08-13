@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניקיון מתחם בוקר - סינמה סיטי</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <style>
+        /* רק CSS ספציפי לצ'ק ליסט ניקיון */
+        .task-item {
+            cursor: pointer;
+        }
+        
+        .task-item.completed {
+            background: #f0fff4 !important;
+            border-color: var(--success-color) !important;
+        }
+        
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        
+        .task-checkbox.checked {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+        
+        .task-checkbox.checked::after {
+            content: '✓';
+            animation: checkmark 0.3s ease;
+        }
+        
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+	<!-- Header -->
+	<div style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; padding: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+		<div class="container">
+			<div class="flex-between">
+				<div class="flex gap-md">
+					<span style="font-size: 2rem;">🧹</span>
+					<div>
+						<h1>ניקיון מתחם בוקר</h1>
+						<div style="font-size: 0.85rem; opacity: 0.9;">
+							<div>📅 <span id="currentDate"></span></div>
+							<div>👤 מנה"ש: <input type="text" style="background: transparent; border: none; color: white; border-bottom: 1px solid rgba(255,255,255,0.5); width: 120px;" placeholder="שם המנה״ש"></div>
+						</div>
+					</div>
+				</div>
+				<div class="flex gap-sm">
+					<button class="btn btn-outline" onclick="goBack()">← חזור</button>
+					<button class="btn" style="background: white; color: #ed8936;" onclick="saveProgress()">💾 שמור התקדמות</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <div class="container">
+        <!-- Progress Section -->
+        <div class="container mt-3 mb-3">
+			<div class="card">
+				<div class="flex-between mb-2">
+					<h2 class="font-semibold">התקדמות כללית</h2>
+					<div class="text-secondary">
+						<span id="completedTasks">0</span> / <span id="totalTasks">51</span> משימות
+						• <span id="timeElapsed">00:00</span> זמן עבודה
+					</div>
+				</div>
+				<div class="progress mb-2">
+					<div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+				</div>
+				<div class="text-center font-semibold" id="progressText">0% הושלם</div>
+			</div>
+		</div>
+
+        <!-- Checklist Sections -->
+		<div class="container">
+			<div class="grid grid-responsive gap-lg">
+				<!-- אולם 1 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-1">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 1</h3>
+							<div class="text-secondary" id="hall-1-progress">0/4 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-1-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">במה</div>
+									<div class="text-secondary">ניקיון במה ובדיקת ציוד</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 2 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-2">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 2</h3>
+							<div class="text-secondary" id="hall-2-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-2-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 3 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-3">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 3</h3>
+							<div class="text-secondary" id="hall-3-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-3-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 4 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-4">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 4</h3>
+							<div class="text-secondary" id="hall-4-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-4-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>										
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 5 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-5">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 5</h3>
+							<div class="text-secondary" id="hall-5-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-5-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 6 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-6">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 6</h3>
+							<div class="text-secondary" id="hall-6-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-6-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 7 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-7">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 7</h3>
+							<div class="text-secondary" id="hall-7-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-7-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div style="flex: 1;">
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 8 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-8">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 8</h3>
+							<div class="text-secondary" id="hall-8-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-8-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 9 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-9">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 9</h3>
+							<div class="text-secondary" id="hall-9-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-9-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 10 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-10">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 10</h3>
+							<div class="text-secondary" id="hall-10-progress">0/3 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-10-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- אולם 11 -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-hall-1">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🎬</div>
+						<div>
+							<h3 class="font-semibold">אולם 11</h3>
+							<div class="text-secondary" id="hall-1-progress">0/4 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="hall-1-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה נקייה</div>
+									<div class="text-secondary">בדיקת ניקיון רצפה ופינוי פסולת</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מעקים וזכוכיות</div>
+									<div class="text-secondary">ניקיון מעקים ומשטחי זכוכית</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מדרגות</div>
+									<div class="text-secondary">ניקיון מדרגות ובדיקת בטיחות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">במה</div>
+									<div class="text-secondary">ניקיון במה ובדיקת ציוד</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- שירותים B -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-bathrooms-b">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🚻</div>
+						<div>
+							<h3 class="font-semibold">שירותים B (קרובים ללובי)</h3>
+							<div class="text-secondary" id="bathrooms-b-progress">0/6 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="bathrooms-b-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">דלתות כניסה</div>
+									<div class="text-secondary">ניקיון וחיטוי דלתות הכניסה</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מחיצות</div>
+									<div class="text-secondary">ניקיון מחיצות בין התאים</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מראות</div>
+									<div class="text-secondary">ניקיון וליטוש מראות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">כיורים וברזים</div>
+									<div class="text-secondary">ניקיון וחיטוי כיורים</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מושבי אסלה</div>
+									<div class="text-secondary">ניקיון וחיטוי מושבים</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה</div>
+									<div class="text-secondary">שטיפה וייבוש רצפה</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- שירותים A -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-bathrooms-a">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🚻</div>
+						<div>
+							<h3 class="font-semibold">שירותים A (קרובים לחדר עובדים)</h3>
+							<div class="text-secondary" id="bathrooms-a-progress">0/6 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="bathrooms-a-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">דלתות כניסה</div>
+									<div class="text-secondary">ניקיון וחיטוי דלתות הכניסה</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מחיצות</div>
+									<div class="text-secondary">ניקיון מחיצות בין התאים</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מראות</div>
+									<div class="text-secondary">ניקיון וליטוש מראות</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">כיורים וברזים</div>
+									<div class="text-secondary">ניקיון וחיטוי כיורים</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מושבי אסלה</div>
+									<div class="text-secondary">ניקיון וחיטוי מושבים</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">רצפה</div>
+									<div class="text-secondary">שטיפה וייבוש רצפה</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- ניקיון מתחם כללי -->
+				<div class="card" style="position: relative;">
+					<span class="badge badge-warning" style="position: absolute; top: 16px; left: 16px;" id="status-general">ממתין</span>
+					<div class="flex gap-md mb-3">
+						<div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">🏢</div>
+						<div>
+							<h3 class="font-semibold">ניקיון מתחם כללי</h3>
+							<div class="text-secondary" id="general-progress">0/4 משימות</div>
+						</div>
+					</div>
+					<div class="flex-col gap-sm" id="general-tasks">
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">לובי מרכזי</div>
+									<div class="text-secondary">ניקיון כללי של אזור הלובי</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">מסדרון אולמות</div>
+									<div class="text-secondary">ניקיון מסדרונות ומעברים</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">טרקלין</div>
+									<div class="text-secondary">ניקיון אזור הטרקלין</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="task-item card" style="background: #f8fafc; margin: 0; padding: 16px;" onclick="toggleTask(this)">
+							<div class="flex gap-md">
+								<div class="task-checkbox" style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 2px;"></div>
+								<div>
+									<div class="task-text font-medium">פחים ריקים</div>
+									<div class="text-secondary">ריקון והחלפת שקיות אשפה</div>
+									<div style="margin-top: 8px;">
+										<button class="btn" style="background: #e2e8f0; color: #4a5568; padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleActions(this)">⚙️ פעולות</button>
+										<div class="task-actions" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px;">
+											<button class="btn" style="background: #dbeafe; color: #1e40af; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addPhoto(this)">📷 צלם</button>
+											<button class="btn" style="background: #fef3c7; color: #92400e; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); addNote(this)">📝 הערה</button>
+											<button class="btn" style="background: #fed7d7; color: #c53030; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); reportIssue(this)">⚠️ תקלה</button>
+											<button class="btn" style="background: #f3e8ff; color: #7c3aed; padding: 6px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); markDirty(this)">🧹 מלוכלך</button>
+										</div>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+    <!-- Bottom Actions -->
+    <div style="position: fixed; bottom: 24px; right: 24px; left: 24px; max-width: 1200px; margin: 0 auto;">
+		<div class="card" style="box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);">
+			<div class="flex-between">
+				<div class="flex gap-md">
+					<div class="font-semibold" id="completionText">0% הושלם</div>
+				</div>
+				<div class="flex gap-sm">
+					<button class="btn btn-secondary" onclick="pauseWork()">⏸️ השהה</button>
+					<button class="btn btn-success" id="completeBtn" disabled onclick="completeChecklist()">✅ סיים צ'ק ליסט</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+    <script>
+        let totalTasks = 51;
+        let completedTasks = 0;
+        let startTime = new Date();
+
+        // עדכון תאריך
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('he-IL');
+
+        function toggleTask(taskElement) {
+            const checkbox = taskElement.querySelector('.task-checkbox');
+            const isCompleted = taskElement.classList.contains('completed');
+            
+            if (isCompleted) {
+                // ביטול סימון
+                taskElement.classList.remove('completed');
+                checkbox.classList.remove('checked');
+                completedTasks--;
+            } else {
+                // סימון כהושלם
+                taskElement.classList.add('completed');
+                checkbox.classList.add('checked');
+                completedTasks++;
+            }
+            
+            updateProgress();
+            updateSectionProgress();
+        }
+
+        function updateProgress() {
+            const percentage = Math.round((completedTasks / totalTasks) * 100);
+            
+            document.getElementById('completedTasks').textContent = completedTasks;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = percentage + '% הושלם';
+            document.getElementById('completionText').textContent = percentage + '% הושלם';
+            
+            // עדכון כפתור השלמה
+            const completeBtn = document.getElementById('completeBtn');
+            if (percentage === 100) {
+                completeBtn.disabled = false;
+                completeBtn.textContent = '🎉 צ\'ק ליסט הושלם!';
+            } else {
+                completeBtn.disabled = true;
+                completeBtn.textContent = `✅ סיים צ'ק ליסט (${percentage}%)`;
+            }
+        }
+
+        function updateSectionProgress() {
+			// עדכון האולמות הבודדים
+			for (let i = 1; i <= 11; i++) {
+				const tasksContainer = document.getElementById(`hall-${i}-tasks`);
+				const progressElement = document.getElementById(`hall-${i}-progress`);
+				const statusElement = document.getElementById(`status-hall-${i}`);
+				
+				if (tasksContainer && progressElement && statusElement) {
+					const completedInSection = tasksContainer.querySelectorAll('.task-item.completed').length;
+					const totalInSection = tasksContainer.querySelectorAll('.task-item').length;
+					
+					progressElement.textContent = `${completedInSection}/${totalInSection} משימות`;
+					
+					if (completedInSection === 0) {
+						statusElement.textContent = 'ממתין';
+						statusElement.className = 'badge badge-warning';
+					} else if (completedInSection === totalInSection) {
+						statusElement.textContent = 'הושלם';
+						statusElement.className = 'badge badge-success';
+					} else {
+						statusElement.textContent = 'בתהליך';
+						statusElement.className = 'badge badge-info';
+					}
+				}
+			}
+			
+			// עדכון שירותים וכללי
+			const sections = [
+				{ tasks: 'bathrooms-b-tasks', progress: 'bathrooms-b-progress', status: 'status-bathrooms-b' },
+				{ tasks: 'bathrooms-a-tasks', progress: 'bathrooms-a-progress', status: 'status-bathrooms-a' },
+				{ tasks: 'general-tasks', progress: 'general-progress', status: 'status-general' }
+			];
+
+			sections.forEach(section => {
+				const tasksContainer = document.getElementById(section.tasks);
+				const progressElement = document.getElementById(section.progress);
+				const statusElement = document.getElementById(section.status);
+				
+				if (tasksContainer && progressElement && statusElement) {
+					const completedInSection = tasksContainer.querySelectorAll('.task-item.completed').length;
+					const totalInSection = tasksContainer.querySelectorAll('.task-item').length;
+					
+					progressElement.textContent = `${completedInSection}/${totalInSection} משימות`;
+					
+					if (completedInSection === 0) {
+						statusElement.textContent = 'ממתין';
+						statusElement.className = 'badge badge-warning';
+					} else if (completedInSection === totalInSection) {
+						statusElement.textContent = 'הושלם';
+						statusElement.className = 'badge badge-success';
+					} else {
+						statusElement.textContent = 'בתהליך';
+						statusElement.className = 'badge badge-info';
+					}
+				}
+			});
+		}
+		
+		function toggleActions(button) {
+			const actionsDiv = button.nextElementSibling;
+			if (actionsDiv.style.display === 'none') {
+				actionsDiv.style.display = 'grid';
+				button.textContent = '⚙️ סגור';
+			} else {
+				actionsDiv.style.display = 'none';
+				button.textContent = '⚙️ פעולות';
+			}
+		}
+		
+        function addPhoto(button) {
+            alert('פותח מצלמה לצילום ראיה...\n\n📷 צלם את המשימה שהושלמה\n💾 התמונה תישמר אוטומטית\n📧 תישלח בדוח הסיכום');
+        }
+
+        function addNote(button) {
+            const note = prompt('הוסף הערה למשימה:');
+            if (note) {
+                button.textContent = '📝 יש הערה';
+                button.style.background = '#fde68a';
+                alert(`הערה נשמרה: "${note}"`);
+            }
+        }
+
+        function reportIssue(button) {
+            const issue = prompt('תאר את התקלה:');
+            if (issue) {
+                button.textContent = '⚠️ דווח';
+                button.style.background = '#fbb6ce';
+                alert(`תקלה דווחה: "${issue}"\n\n🚨 נשלחה התראה למנהל\n📞 יצירת קשר עם צוות תחזוקה`);
+            }
+        }
+
+		function markDirty(button) {
+			const reason = prompt('מה הבעיה עם הניקיון?\n\nדוגמאות:\n• נשפכה שתייה\n• שאריות אוכל\n• כתמים על הרצפה\n• צריך ניקיון נוסף');
+			if (reason) {
+				button.textContent = '🧹 דווח';
+				button.style.background = '#e9d5ff';
+				button.style.color = '#6b21a8';
+				
+				// שינוי צבע המשימה למצב "דורש ניקיון נוסף"
+				const taskItem = button.closest('.task-item');
+				taskItem.style.borderRight = '4px solid #7c3aed';
+				taskItem.style.background = '#f3f4f6';
+				
+				alert(`סומן כמלוכלך: "${reason}"\n\n🧹 הועבר לצוות ניקיון מתקדם\n📋 יתווסף לרשימת משימות נוספות\n⏰ זמן משוער לטיפול: 15 דקות`);
+			}
+		}
+		
+        function updateTimer() {
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timeElapsed').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function goBack() {
+			if (confirm('האם אתה בטוח שברצונך לחזור? ההתקדמות תישמר אוטומטית.')) {
+				// שמירת התקדמות לפני יציאה
+				saveProgress();
+				// חזרה לדף הצ'ק ליסטים
+				window.location.href = 'index.html';
+			}
+		}
+
+		// פונקציית שמירה משופרת
+		function saveProgress() {
+			const progressData = {
+				checklistType: 'cleaning',
+				completedTasks: completedTasks,
+				totalTasks: totalTasks,
+				startTime: startTime,
+				lastSaved: new Date(),
+				taskStates: []
+			};
+			
+			// שמירת מצב כל משימה
+			document.querySelectorAll('.task-item').forEach((task, index) => {
+				progressData.taskStates.push({
+					index: index,
+					completed: task.classList.contains('completed'),
+					text: task.querySelector('.task-text').textContent
+				});
+			});
+			
+			// שמירה ב-localStorage
+			localStorage.setItem('cleaning_progress', JSON.stringify(progressData));
+			
+			alert(`💾 התקדמות נשמרה!\n\n✅ ${completedTasks}/${totalTasks} משימות הושלמו\n⏰ ${document.getElementById('timeElapsed').textContent} זמן עבודה\n📅 ${new Date().toLocaleString('he-IL')}`);
+		}
+
+		// פונקציה לטעינת התקדמות שמורה
+		function loadProgress() {
+			const savedProgress = localStorage.getItem('cleaning_progress');
+			if (savedProgress) {
+				const progressData = JSON.parse(savedProgress);
+				
+				if (confirm(`נמצאה התקדמות שמורה מ-${new Date(progressData.lastSaved).toLocaleString('he-IL')}.\nהאם תרצה להמשיך מהנקודה שבה עצרת?`)) {
+					// שחזור התקדמות
+					completedTasks = progressData.completedTasks;
+					startTime = new Date(progressData.startTime);
+					
+					// שחזור מצב משימות
+					progressData.taskStates.forEach((taskState, index) => {
+						const taskElement = document.querySelectorAll('.task-item')[index];
+						if (taskElement && taskState.completed) {
+							taskElement.classList.add('completed');
+							taskElement.querySelector('.task-checkbox').classList.add('checked');
+						}
+					});
+					
+					updateProgress();
+					updateSectionProgress();
+				}
+			}
+		}
+
+		// הפעלת טעינת התקדמות כשהדף נטען
+		document.addEventListener('DOMContentLoaded', function() {
+			loadProgress();
+			
+			// השאר הקוד הקיים...
+			const cards = document.querySelectorAll('.section-card');
+			cards.forEach((card, index) => {
+				card.style.opacity = '0';
+				card.style.transform = 'translateY(20px)';
+				setTimeout(() => {
+					card.style.transition = 'all 0.6s ease';
+					card.style.opacity = '1';
+					card.style.transform = 'translateY(0)';
+				}, index * 200);
+			});
+		});
+
+        function saveProgress() {
+            alert(`💾 התקדמות נשמרה!\n\n✅ ${completedTasks}/${totalTasks} משימות הושלמו\n⏰ ${document.getElementById('timeElapsed').textContent} זמן עבודה\n📅 ${new Date().toLocaleString('he-IL')}`);
+        }
+
+        function pauseWork() {
+            alert('⏸️ עבודה הושהתה\n\n• ההתקדמות נשמרה\n• ניתן להמשיך בכל עת\n• זמן ההשהיה לא ימדד');
+        }
+
+        function completeChecklist() {
+            if (completedTasks === totalTasks) {
+                alert(`🎉 מעולה! צ'ק ליסט ניקיון הושלם בהצלחה!\n\n✅ ${totalTasks} משימות הושלמו\n⏰ זמן כולל: ${document.getElementById('timeElapsed').textContent}\n📧 דוח נשלח למנהל\n🏆 עבודה מצוינת!`);
+            }
+        }
+
+        // עדכון טיימר כל שנייה
+        setInterval(updateTimer, 1000);
+
+        // אתחול
+        updateProgress();
+        updateSectionProgress();
+
+        // אנימציות כניסה
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.section-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+    <script src="../../assets/js/main.js"></script>
+    <script src="assets/js/checklists.js"></script>
+</body>
+</html>

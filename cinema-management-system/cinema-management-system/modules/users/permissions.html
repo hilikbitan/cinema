@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול הרשאות - סינמה סיטי</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <style>
+        /* סגנונות ספציפיים לדף הרשאות */
+        .permissions-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .permissions-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .permissions-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .permissions-header .subtitle {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        /* כרטיסי תפקידים */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .role-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
+        }
+
+        .role-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .role-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .role-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .role-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .role-stats {
+            display: flex;
+            gap: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .role-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .role-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .role-stat-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* טבלת הרשאות מפורטת */
+        .permissions-table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .permissions-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .permissions-table-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .permission-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        /* טבלת הרשאות */
+        .permissions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .permissions-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .permissions-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .permissions-table tr:hover {
+            background: rgba(102,126,234,0.03);
+        }
+
+        .module-name {
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-icon {
+            font-size: 20px;
+        }
+
+        /* Checkboxes מעוצבים */
+        .permission-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .permission-checkbox:checked {
+            transform: scale(1.1);
+        }
+
+        /* מטריצת הרשאות */
+        .permissions-matrix {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .matrix-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: bold;
+        }
+
+        .permission-cell {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .permission-icon {
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .permission-icon.granted {
+            color: #52c41a;
+        }
+
+        .permission-icon.denied {
+            color: #ff4757;
+            opacity: 0.3;
+        }
+
+        .permission-icon:hover {
+            transform: scale(1.2);
+        }
+
+        /* חיפוש וסינון */
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        /* כרטיס סיכום */
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* מודאל עריכת הרשאות */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #52c41a;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* טבלאות במובייל */
+        @media (max-width: 768px) {
+            .permissions-container {
+                padding: 10px;
+            }
+
+            .permissions-header {
+                padding: 20px;
+            }
+
+            .permissions-header h1 {
+                font-size: 22px;
+            }
+
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .permissions-table {
+                font-size: 12px;
+            }
+
+            .permissions-table th,
+            .permissions-table td {
+                padding: 8px;
+            }
+
+            .permission-checkbox {
+                width: 16px;
+                height: 16px;
+            }
+
+            .search-filter-bar {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+        }
+
+        /* אנימציות */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* הודעות */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: #d4f4dd;
+            color: #137333;
+            border: 1px solid #137333;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #856404;
+        }
+
+        .alert-error {
+            background: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #c5221f;
+        }
+    </style>
+</head>
+<body>
+    <div class="permissions-container">
+        <!-- Header -->
+        <div class="permissions-header">
+            <h1>
+                <span>🔐</span>
+                ניהול הרשאות ותפקידים
+            </h1>
+            <div class="subtitle">הגדר והתאם אישית הרשאות לכל תפקיד במערכת</div>
+        </div>
+
+        <!-- הודעות -->
+        <div id="alertMessage" class="alert alert-success">
+            <span>✅</span>
+            <span id="alertText">השינויים נשמרו בהצלחה!</span>
+        </div>
+
+        <!-- כרטיס סיכום -->
+        <div class="summary-card">
+            <h2>סיכום הרשאות במערכת</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-value">5</div>
+                    <div class="summary-label">תפקידים מוגדרים</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">42</div>
+                    <div class="summary-label">משתמשים פעילים</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">8</div>
+                    <div class="summary-label">מודולים במערכת</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">37</div>
+                    <div class="summary-label">הרשאות שונות</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- כרטיסי תפקידים -->
+        <h2 style="margin-bottom: 20px;">תפקידים במערכת</h2>
+        <div class="roles-grid">
+            <div class="role-card selected" onclick="selectRole('admin')">
+                <div class="role-header">
+                    <div class="role-title">👑 מנהל מערכת</div>
+                    <div class="role-badge">Admin</div>
+                </div>
+                <div class="role-description">
+                    גישה מלאה לכל המערכת, כולל ניהול משתמשים, הגדרות מערכת ודוחות מנהלים.
+                </div>
+                <div class="role-stats">
+                    <div class="role-stat">
+                        <div class="role-stat-value">5</div>
+                        <div class="role-stat-label">משתמשים</div>
+                    </div>
+                    <div class="role-stat">
+                        <div class="role-stat-value">37</div>
+                        <div class="role-stat-label">הרשאות</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="role-card" onclick="selectRole('supervisor')">
+                <div class="role-header">
+                    <div class="role-title">📋 סופרוויזר</div>
+                    <div class="role-badge">Supervisor</div>
+                </div>
+                <div class="role-description">
+                    ניהול צוות, אישור דוחות, ניהול מלאי וגישה לנתונים תפעוליים.
+                </div>
+                <div class="role-stats">
+                    <div class="role-stat">
+                        <div class="role-stat-value">12</div>
+                        <div class="role-stat-label">משתמשים</div>
+                    </div>
+                    <div class="role-stat">
+                        <div class="role-stat-value">24</div>
+                        <div class="role-stat-label">הרשאות</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="role-card" onclick="selectRole('worker')">
+                <div class="role-header">
+                    <div class="role-title">🍿 עובד מזנון</div>
+                    <div class="role-badge">Worker</div>
+                </div>
+                <div class="role-description">
+                    גישה למערכת מלאי, דיווחי מכירות ומילוי צ'ק ליסטים יומיים.
+                </div>
+                <div class="role-stats">
+                    <div class="role-stat">
+                        <div class="role-stat-value">15</div>
+                        <div class="role-stat-label">משתמשים</div>
+                    </div>
+                    <div class="role-stat">
+                        <div class="role-stat-value">12</div>
+                        <div class="role-stat-label">הרשאות</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="role-card" onclick="selectRole('usher')">
+                <div class="role-header">
+                    <div class="role-title">🎬 סדרן</div>
+                    <div class="role-badge">Usher</div>
+                </div>
+                <div class="role-description">
+                    דיווח על אולמות, תקלות, אבידות ומילוי דוחות יומיים.
+                </div>
+                <div class="role-stats">
+                    <div class="role-stat">
+                        <div class="role-stat-value">8</div>
+                        <div class="role-stat-label">משתמשים</div>
+                    </div>
+                    <div class="role-stat">
+                        <div class="role-stat-value">10</div>
+                        <div class="role-stat-label">הרשאות</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="role-card" onclick="selectRole('maintenance')">
+                <div class="role-header">
+                    <div class="role-title">🔧 אחזקה</div>
+                    <div class="role-badge">Maintenance</div>
+                </div>
+                <div class="role-description">
+                    ניהול תקלות, תחזוקה מונעת וגישה למערכות טכניות.
+                </div>
+                <div class="role-stats">
+                    <div class="role-stat">
+                        <div class="role-stat-value">2</div>
+                        <div class="role-stat-label">משתמשים</div>
+                    </div>
+                    <div class="role-stat">
+                        <div class="role-stat-value">8</div>
+                        <div class="role-stat-label">הרשאות</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="role-card" onclick="openNewRoleModal()">
+                <div class="role-header">
+                    <div class="role-title">➕ תפקיד חדש</div>
+                </div>
+                <div class="role-description">
+                    צור תפקיד מותאם אישית עם הרשאות ספציפיות לצרכי הארגון.
+                </div>
+                <div class="role-stats">
+                    <div class="role-stat">
+                        <div class="role-stat-value">+</div>
+                        <div class="role-stat-label">צור חדש</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- טבלת הרשאות מפורטת -->
+        <div class="permissions-table-container">
+            <div class="permissions-table-header">
+                <div class="permissions-table-title">
+                    הרשאות מפורטות - <span id="selectedRoleName">מנהל מערכת</span>
+                </div>
+                <div class="permission-actions">
+                    <button class="btn btn-secondary" onclick="copyPermissions()">
+                        📋 העתק הרשאות
+                    </button>
+                    <button class="btn btn-primary" onclick="savePermissions()">
+                        💾 שמור שינויים
+                    </button>
+                </div>
+            </div>
+
+            <!-- חיפוש וסינון -->
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <input type="text" placeholder="חפש הרשאה..." id="searchPermission" onkeyup="filterPermissions()">
+                </div>
+                <select class="filter-select" onchange="filterByModule(this.value)">
+                    <option value="">כל המודולים</option>
+                    <option value="dashboard">דאשבורד</option>
+                    <option value="inventory">מלאי</option>
+                    <option value="checklist">צ'ק ליסטים</option>
+                    <option value="reports">דוחות</option>
+                    <option value="staff">צוות</option>
+                    <option value="maintenance">תחזוקה</option>
+                    <option value="system">מערכת</option>
+                </select>
+            </div>
+
+            <!-- טבלת הרשאות -->
+            <table class="permissions-table" id="permissionsTable">
+                <thead>
+                    <tr>
+                        <th>מודול</th>
+                        <th>צפייה</th>
+                        <th>יצירה</th>
+                        <th>עריכה</th>
+                        <th>מחיקה</th>
+                        <th>אישור</th>
+                        <th>ייצוא</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-module="dashboard">
+                        <td class="module-name">
+                            <span class="module-icon">📊</span>
+                            דאשבורד
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="dashboard_view" checked>
+                        </td>
+                        <td class="permission-cell">-</td>
+                        <td class="permission-cell">-</td>
+                        <td class="permission-cell">-</td>
+                        <td class="permission-cell">-</td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="dashboard_export" checked>
+                        </td>
+                    </tr>
+                    <tr data-module="inventory">
+                        <td class="module-name">
+                            <span class="module-icon">📦</span>
+                            מלאי מזנון
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="inventory_view" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="inventory_add" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="inventory_edit" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="inventory_delete" checked>
+                        </td>
+                        <td class="permission-cell">-</td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="inventory_export" checked>
+                        </td>
+                    </tr>
+                    <tr data-module="checklist">
+                        <td class="module-name">
+                            <span class="module-icon">✅</span>
+                            צ'ק ליסטים
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="checklist_view" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="checklist_create" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="checklist_fill" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="checklist_delete" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="checklist_approve" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="checklist_export" checked>
+                        </td>
+                    </tr>
+                    <tr data-module="reports">
+                        <td class="module-name">
+                            <span class="module-icon">📋</span>
+                            דוחות
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="reports_view" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="reports_create" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="reports_edit" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="reports_delete" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="reports_approve" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="reports_export" checked>
+                        </td>
+                    </tr>
+                    <tr data-module="staff">
+                        <td class="module-name">
+                            <span class="module-icon">👥</span>
+                            ניהול צוות
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="staff_view" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="staff_add" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="staff_edit" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="staff_delete" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="staff_evaluate" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="staff_schedule" checked>
+                        </td>
+                    </tr>
+                    <tr data-module="maintenance">
+                        <td class="module-name">
+                            <span class="module-icon">🔧</span>
+                            תחזוקה
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="maintenance_view" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="maintenance_report" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="maintenance_manage" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="maintenance_delete" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="maintenance_close" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="maintenance_export" checked>
+                        </td>
+                    </tr>
+                    <tr data-module="system">
+                        <td class="module-name">
+                            <span class="module-icon">⚙️</span>
+                            מערכת
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="settings_view" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="users_add" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="settings_manage" checked>
+                        </td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="users_delete" checked>
+                        </td>
+                        <td class="permission-cell">-</td>
+                        <td class="permission-cell">
+                            <input type="checkbox" class="permission-checkbox" id="logs_export" checked>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- כפתורי פעולה מהירה -->
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="selectAll()">בחר הכל</button>
+                <button class="btn btn-secondary" onclick="deselectAll()">נקה הכל</button>
+                <button class="btn btn-secondary" onclick="resetToDefault()">אפס לברירת מחדל</button>
+            </div>
+        </div>
+
+        <!-- כפתור חזרה -->
+        <div style="margin-top: 30px;">
+            <button class="btn btn-secondary" onclick="goBack()">
+                ← חזור לדאשבורד
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal לתפקיד חדש -->
+    <div id="newRoleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>יצירת תפקיד חדש</h2>
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">שם התפקיד</label>
+                    <input type="text" id="newRoleName" style="width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">תיאור</label>
+                    <textarea id="newRoleDescription" style="width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; min-height: 100px;"></textarea>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">העתק הרשאות מתפקיד קיים</label>
+                    <select id="copyFromRole" style="width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <option value="">בחר תפקיד</option>
+                        <option value="admin">מנהל מערכת</option>
+                        <option value="supervisor">סופרוויזר</option>
+                        <option value="worker">עובד מזנון</option>
+                        <option value="usher">סדרן</option>
+                        <option value="maintenance">אחזקה</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">ביטול</button>
+                <button class="btn btn-primary" onclick="createNewRole()">צור תפקיד</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // משתנים גלובליים
+        let currentRole = 'admin';
+        let permissionsData = {
+            admin: {
+                dashboard: ['view', 'export'],
+                inventory: ['view', 'add', 'edit', 'delete', 'export'],
+                checklist: ['view', 'create', 'fill', 'delete', 'approve', 'export'],
+                reports: ['view', 'create', 'edit', 'delete', 'approve', 'export'],
+                staff: ['view', 'add', 'edit', 'delete', 'evaluate', 'schedule'],
+                maintenance: ['view', 'report', 'manage', 'delete', 'close', 'export'],
+                system: ['view', 'add', 'manage', 'delete', 'export']
+            },
+            supervisor: {
+                dashboard: ['view', 'export'],
+                inventory: ['view', 'add', 'edit', 'export'],
+                checklist: ['view', 'fill', 'approve', 'export'],
+                reports: ['view', 'create', 'export'],
+                staff: ['view', 'edit', 'evaluate', 'schedule'],
+                maintenance: ['view', 'report'],
+                system: ['view']
+            },
+            worker: {
+                dashboard: ['view'],
+                inventory: ['view', 'add'],
+                checklist: ['view', 'fill'],
+                reports: ['view'],
+                staff: [],
+                maintenance: ['view', 'report'],
+                system: []
+            },
+            usher: {
+                dashboard: ['view'],
+                inventory: [],
+                checklist: ['view', 'fill'],
+                reports: ['view', 'create'],
+                staff: [],
+                maintenance: ['view', 'report'],
+                system: []
+            },
+            maintenance: {
+                dashboard: ['view'],
+                inventory: ['view'],
+                checklist: ['view', 'fill'],
+                reports: ['view'],
+                staff: [],
+                maintenance: ['view', 'report', 'manage', 'close'],
+                system: []
+            }
+        };
+
+        // בחירת תפקיד
+        function selectRole(role) {
+            currentRole = role;
+            
+            // עדכון כרטיסים
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.role-card').classList.add('selected');
+            
+            // עדכון שם התפקיד
+            const roleNames = {
+                admin: 'מנהל מערכת',
+                supervisor: 'סופרוויזר',
+                worker: 'עובד מזנון',
+                usher: 'סדרן',
+                maintenance: 'אחזקה'
+            };
+            document.getElementById('selectedRoleName').textContent = roleNames[role] || role;
+            
+            // טעינת הרשאות
+            loadPermissions(role);
+        }
+
+        // טעינת הרשאות לטבלה
+        function loadPermissions(role) {
+            const permissions = permissionsData[role];
+            if (!permissions) return;
+            
+            // ניקוי כל הצ'קבוקסים
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // סימון הרשאות פעילות
+            Object.keys(permissions).forEach(module => {
+                permissions[module].forEach(action => {
+                    const checkboxId = `${module}_${action}`;
+                    const checkbox = document.getElementById(checkboxId);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            });
+        }
+
+        // שמירת הרשאות
+        function savePermissions() {
+            const permissions = {};
+            
+            // איסוף כל ההרשאות המסומנות
+            document.querySelectorAll('.permission-checkbox:checked').forEach(checkbox => {
+                const [module, action] = checkbox.id.split('_');
+                if (!permissions[module]) {
+                    permissions[module] = [];
+                }
+                permissions[module].push(action);
+            });
+            
+            // שמירה במערך
+            permissionsData[currentRole] = permissions;
+            
+            // הצגת הודעה
+            showAlert('ההרשאות נשמרו בהצלחה!', 'success');
+            
+            console.log('Saved permissions for', currentRole, permissions);
+        }
+
+        // בחירת כל ההרשאות
+        function selectAll() {
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        // ניקוי כל ההרשאות
+        function deselectAll() {
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // איפוס לברירת מחדל
+        function resetToDefault() {
+            if (confirm('האם לאפס את ההרשאות לברירת המחדל של התפקיד?')) {
+                loadPermissions(currentRole);
+                showAlert('ההרשאות אופסו לברירת המחדל', 'warning');
+            }
+        }
+
+        // העתקת הרשאות
+        function copyPermissions() {
+            const permissions = [];
+            document.querySelectorAll('.permission-checkbox:checked').forEach(checkbox => {
+                permissions.push(checkbox.id);
+            });
+            
+            // שמירה בזיכרון
+            localStorage.setItem('copiedPermissions', JSON.stringify(permissions));
+            showAlert('ההרשאות הועתקו! בחר תפקיד אחר והדבק', 'success');
+        }
+
+        // חיפוש הרשאות
+        function filterPermissions() {
+            const searchTerm = document.getElementById('searchPermission').value.toLowerCase();
+            const rows = document.querySelectorAll('#permissionsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // סינון לפי מודול
+        function filterByModule(module) {
+            const rows = document.querySelectorAll('#permissionsTable tbody tr');
+            
+            rows.forEach(row => {
+                if (module === '' || row.dataset.module === module) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // פתיחת מודאל תפקיד חדש
+        function openNewRoleModal() {
+            document.getElementById('newRoleModal').classList.add('active');
+        }
+
+        // סגירת מודאל
+        function closeModal() {
+            document.getElementById('newRoleModal').classList.remove('active');
+        }
+
+        // יצירת תפקיד חדש
+        function createNewRole() {
+            const roleName = document.getElementById('newRoleName').value;
+            const roleDescription = document.getElementById('newRoleDescription').value;
+            const copyFrom = document.getElementById('copyFromRole').value;
+            
+            if (!roleName) {
+                showAlert('נא להזין שם תפקיד', 'error');
+                return;
+            }
+            
+            // העתקת הרשאות אם נבחר
+            if (copyFrom && permissionsData[copyFrom]) {
+                permissionsData[roleName.toLowerCase()] = {...permissionsData[copyFrom]};
+            } else {
+                permissionsData[roleName.toLowerCase()] = {};
+            }
+            
+            showAlert(`התפקיד "${roleName}" נוצר בהצלחה!`, 'success');
+            closeModal();
+            
+            // רענון הדף (בפועל יש לטעון מחדש את הכרטיסים)
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        }
+
+        // הצגת הודעה
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alertMessage');
+            const alertText = document.getElementById('alertText');
+            
+            alert.className = `alert alert-${type} active`;
+            alertText.textContent = message;
+            
+            setTimeout(() => {
+                alert.classList.remove('active');
+            }, 3000);
+        }
+
+        // חזרה לדאשבורד
+        function goBack() {
+            window.location.href = '../../index.html';
+        }
+
+        // טעינה ראשונית
+        window.addEventListener('load', function() {
+            loadPermissions('admin');
+        });
+
+        // סגירת מודאל בלחיצת ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
