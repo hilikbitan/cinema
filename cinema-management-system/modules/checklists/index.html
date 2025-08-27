@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צ'ק ליסטים - סינמה סיטי</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/checklists.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <span style="font-size: 2rem;">✅</span>
+                <div>
+                    <h1>צ'ק ליסטים דיגיטליים</h1>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">ניהול משימות ובדיקות יומיות</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="goBack()">
+                    → חזרה לדאשבורד
+                </button>
+                <button class="btn btn-secondary" onclick="showHistory()">
+                    📋 היסטוריה
+                </button>
+                <button class="btn btn-secondary" onclick="exportReport()">
+                    📤 ייצא דוח
+                </button>
+                <button class="btn btn-primary" onclick="createNewChecklist()">
+                    ➕ צ'ק ליסט חדש
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value success">18</div>
+                <div class="stat-label">הושלמו היום</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning">7</div>
+                <div class="stat-label">ממתינות</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value error">2</div>
+                <div class="stat-label">באיחור</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value primary">92%</div>
+                <div class="stat-label">השלמה שבועית</div>
+            </div>
+        </div>
+
+        <!-- Checklist Types -->
+        <div class="checklist-types">
+            <!-- Event Checklist -->
+            <div class="checklist-type event" onclick="openChecklist('event')">
+                <div class="type-header">
+                    <div class="type-title">
+                        <div class="type-icon event">🎬</div>
+                        <div>
+                            <div>בדיקת מתחם אחרי אירועים</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
+                                ניקיון והכנה לאירוע הבא
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-status">
+                        <div class="status-indicator status-pending"></div>
+                        <span>בתהליך</span>
+                    </div>
+                </div>
+                <div class="type-description">
+                    בדיקת מתחם טרקלין, בר VIP, מטבח ומחסנים. החזרת ציוד למקום וניקיון יסודי.
+                </div>
+                <div class="type-progress">
+                    <div class="progress-bar event" style="width: 65%;"></div>
+                </div>
+                <div class="type-footer">
+                    <div class="tasks-count">13/20 משימות</div>
+                    <div class="last-update">עודכן לפני 15 דקות</div>
+                </div>
+            </div>
+
+            <!-- Daily Checklist -->
+            <div class="checklist-type daily" onclick="openChecklist('daily')">
+                <div class="type-header">
+                    <div class="type-title">
+                        <div class="type-icon daily">🏢</div>
+                        <div>
+                            <div>סגירה יומית במחלקות</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
+                                קופות, VIP, מזנון, סדרנים
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-status">
+                        <div class="status-indicator status-complete"></div>
+                        <span>הושלם</span>
+                    </div>
+                </div>
+                <div class="type-description">
+                    בדיקת קופות, נעילת מזנון, החזרת ציוד סדרנים ובדיקת כל המערכות.
+                </div>
+                <div class="type-progress">
+                    <div class="progress-bar daily" style="width: 100%;"></div>
+                </div>
+                <div class="type-footer">
+                    <div class="tasks-count">25/25 משימות</div>
+                    <div class="last-update">הושלם לפני שעה</div>
+                </div>
+            </div>
+
+            <!-- Cleaning Checklist -->
+            <div class="checklist-type cleaning" onclick="openChecklist('cleaning')">
+                <div class="type-header">
+                    <div class="type-title">
+                        <div class="type-icon cleaning">🧹</div>
+                        <div>
+                            <div>ניקיון מתחם בוקר</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
+                                אולמות, שירותים, לובי
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-status">
+                        <div class="status-indicator status-overdue"></div>
+                        <span>באיחור</span>
+                    </div>
+                </div>
+                <div class="type-description">
+                    ניקיון יסודי של כל האולמות, שירותים, מתחם הלובי ובדיקת ציוד הניקיון.
+                </div>
+                <div class="type-progress">
+                    <div class="progress-bar cleaning" style="width: 40%;"></div>
+                </div>
+                <div class="type-footer">
+                    <div class="tasks-count">6/15 משימות</div>
+                    <div class="last-update">איחור של 30 דקות</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Tasks -->
+        <div class="active-tasks">
+            <div class="section-title">
+                🔥 משימות דחופות
+            </div>
+            <div class="task-list">
+                <div class="task-item urgent">
+                    <div class="task-header">
+                        <div class="task-title">בדיקת מקרר מזנון B - טמפרטורה גבוהה</div>
+                        <div class="task-priority priority-high">דחוף</div>
+                    </div>
+                    <div class="task-details">
+                        מקרר מציג 8.5°C - חריגה מהטווח התקין. דרושה בדיקה מיידית.
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-time">נפתח לפני 10 דקות</div>
+                        <button class="task-action" onclick="handleTask('fridge')">טפל עכשיו</button>
+                    </div>
+                </div>
+
+                <div class="task-item overdue">
+                    <div class="task-header">
+                        <div class="task-title">ניקיון אולמות 3, 5, 7 - לא הושלם</div>
+                        <div class="task-priority priority-high">באיחור</div>
+                    </div>
+                    <div class="task-details">
+                        צ'ק ליסט ניקיון בוקר לא הושלם - 3 אולמות דורשים טיפול.
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-time">איחור של 25 דקות</div>
+                        <button class="task-action" onclick="handleTask('cleaning')">התחל ניקיון</button>
+                    </div>
+                </div>
+
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-title">החזרת ציוד סדרנים - סורקים וקשרים</div>
+                        <div class="task-priority priority-medium">רגיל</div>
+                    </div>
+                    <div class="task-details">
+                        החזרת הציוד למשרד מנה"ש והטענה לקראת המשמרת הבאה.
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-time">נותר 45 דקות</div>
+                        <button class="task-action" onclick="handleTask('equipment')">התחל משימה</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- מודאל יצירת צ'ק ליסט -->
+	<div id="createChecklistModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2>בחר תבנית צ'ק ליסט</h2>
+				<button class="close-btn" onclick="closeModal()">✕</button>
+			</div>
+			<div class="modal-body">
+				<div class="templates-grid" id="templatesGrid">
+					<!-- התבניות יטענו כאן -->
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" onclick="closeModal()">ביטול</button>
+				<button id="adminCreateTemplateBtn" class="btn btn-primary" onclick="openTemplateCreator()" style="display: none;">
+					➕ צור תבנית חדשה
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- מודאל יצירת תבנית (למנהלים) -->
+	<div id="createTemplateModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2>יצירת תבנית חדשה</h2>
+				<button class="close-btn" onclick="closeTemplateModal()">✕</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>שם התבנית</label>
+					<input type="text" id="templateName" placeholder="לדוגמה: בדיקת ציוד הקרנה">
+				</div>
+				<div class="form-group">
+					<label>תיאור</label>
+					<textarea id="templateDescription" placeholder="תיאור קצר של התבנית"></textarea>
+				</div>
+				<div class="form-group">
+					<label>סוג</label>
+					<select id="templateType">
+						<option value="daily">יומי</option>
+						<option value="event">אירוע</option>
+						<option value="cleaning">ניקיון</option>
+						<option value="safety">בטיחות</option>
+						<option value="maintenance">תחזוקה</option>
+						<option value="custom">אחר</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label>משימות</label>
+					<div id="tasksList">
+						<div class="task-input-group">
+							<input type="text" placeholder="משימה 1" class="task-input">
+							<label><input type="checkbox" checked> חובה</label>
+						</div>
+					</div>
+					<button class="btn btn-secondary" onclick="addTaskInput()">+ הוסף משימה</button>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" onclick="closeTemplateModal()">ביטול</button>
+				<button class="btn btn-primary" onclick="saveTemplate()">שמור תבנית</button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	// מערכת תבניות צ'ק ליסטים
+	const ChecklistTemplates = {
+		// טעינת תבניות מ-localStorage
+		getTemplates: function() {
+			const saved = localStorage.getItem('cinema_checklist_templates');
+			if (saved) {
+				return JSON.parse(saved);
+			}
+			
+			// תבניות ברירת מחדל
+			const defaultTemplates = [
+				{
+					id: 't1',
+					name: 'בדיקת מתחם אחרי אירועים',
+					type: 'event',
+					description: 'בדיקת מתחם טרקלין, בר VIP, מטבח ומחסנים',
+					tasks: [
+						{ id: 1, title: 'בדיקת ניקיון טרקלין VIP', required: true },
+						{ id: 2, title: 'החזרת ציוד בר למקום', required: true },
+						{ id: 3, title: 'בדיקת מלאי משקאות', required: false },
+						{ id: 4, title: 'ניקוי מטבח', required: true },
+						{ id: 5, title: 'סגירת מערכות תאורה', required: true },
+						{ id: 6, title: 'נעילת מחסנים', required: true },
+						{ id: 7, title: 'בדיקת שירותי VIP', required: true },
+						{ id: 8, title: 'איסוף אבידות', required: false },
+						{ id: 9, title: 'תיעוד נזקים אם ישנם', required: false },
+						{ id: 10, title: 'דיווח למנהל משמרת', required: true }
+					],
+					createdBy: 'מערכת',
+					isSystem: true
+				},
+				{
+					id: 't2',
+					name: 'סגירה יומית במחלקות',
+					type: 'daily',
+					description: 'בדיקת קופות, נעילת מזנון, החזרת ציוד',
+					tasks: [
+						{ id: 1, title: 'ספירת קופה ראשית', required: true },
+						{ id: 2, title: 'ספירת קופות משנה', required: true },
+						{ id: 3, title: 'הפקדת כספים בכספת', required: true },
+						{ id: 4, title: 'נעילת מזנון', required: true },
+						{ id: 5, title: 'כיבוי מכונות פופקורן', required: true },
+						{ id: 6, title: 'ניקוי דלפקים', required: true },
+						{ id: 7, title: 'החזרת ציוד סדרנים', required: true },
+						{ id: 8, title: 'בדיקת אולמות', required: true },
+						{ id: 9, title: 'כיבוי מערכות', required: true },
+						{ id: 10, title: 'נעילת משרדים', required: true },
+						{ id: 11, title: 'הפעלת אזעקה', required: true },
+						{ id: 12, title: 'דיווח סיום משמרת', required: true }
+					],
+					createdBy: 'מערכת',
+					isSystem: true
+				},
+				{
+					id: 't3',
+					name: 'ניקיון מתחם בוקר',
+					type: 'cleaning',
+					description: 'ניקיון יסודי של כל האולמות, שירותים, לובי',
+					tasks: [
+						{ id: 1, title: 'ניקיון אולם 1', required: true },
+						{ id: 2, title: 'ניקיון אולם 2', required: true },
+						{ id: 3, title: 'ניקיון אולם 3', required: true },
+						{ id: 4, title: 'ניקיון שירותים קומה א', required: true },
+						{ id: 5, title: 'ניקיון שירותים קומה ב', required: true },
+						{ id: 6, title: 'ניקיון לובי ראשי', required: true },
+						{ id: 7, title: 'ריקון פחי אשפה', required: true },
+						{ id: 8, title: 'מילוי חומרי ניקיון', required: true }
+					],
+					createdBy: 'מערכת',
+					isSystem: true
+				},
+				{
+					id: 't4',
+					name: 'בדיקת בטיחות יומית',
+					type: 'safety',
+					description: 'בדיקת תקינות ציוד בטיחות ומערכות חירום',
+					tasks: [
+						{ id: 1, title: 'בדיקת יציאות חירום', required: true },
+						{ id: 2, title: 'בדיקת תאורת חירום', required: true },
+						{ id: 3, title: 'בדיקת מטפים', required: true },
+						{ id: 4, title: 'בדיקת גלאי עשן', required: true },
+						{ id: 5, title: 'בדיקת מערכת כריזה', required: true },
+						{ id: 6, title: 'בדיקת ערכות עזרה ראשונה', required: true }
+					],
+					createdBy: 'מערכת',
+					isSystem: true
+				}
+			];
+			
+			this.saveTemplates(defaultTemplates);
+			return defaultTemplates;
+		},
+		
+		// שמירת תבניות
+		saveTemplates: function(templates) {
+			localStorage.setItem('cinema_checklist_templates', JSON.stringify(templates));
+		},
+		
+		// הוספת תבנית חדשה
+		addTemplate: function(templateData) {
+			const templates = this.getTemplates();
+			const newId = 't' + (templates.length + 1);
+			
+			const newTemplate = {
+				...templateData,
+				id: newId,
+				createdAt: new Date().toISOString(),
+				createdBy: localStorage.getItem('username') || 'משתמש',
+				isSystem: false
+			};
+			
+			templates.push(newTemplate);
+			this.saveTemplates(templates);
+			return newTemplate;
+		},
+		
+		// מחיקת תבנית (רק תבניות מותאמות אישית)
+		deleteTemplate: function(id) {
+			const templates = this.getTemplates();
+			const filtered = templates.filter(t => t.id !== id || t.isSystem);
+			this.saveTemplates(filtered);
+		}
+	};
+
+	// מערכת ניהול צ'ק ליסטים
+	const ChecklistsDB = {
+		// טעינת צ'ק ליסטים מ-localStorage
+		getChecklists: function() {
+			const saved = localStorage.getItem('cinema_checklists');
+			if (saved) {
+				return JSON.parse(saved);
+			}
+			
+			const defaultChecklists = [];
+			this.saveChecklists(defaultChecklists);
+			return defaultChecklists;
+		},
+		
+		// שמירת צ'ק ליסטים
+		saveChecklists: function(checklists) {
+			localStorage.setItem('cinema_checklists', JSON.stringify(checklists));
+		},
+		
+		// יצירת צ'ק ליסט מתבנית
+		createFromTemplate: function(templateId) {
+			const templates = ChecklistTemplates.getTemplates();
+			const template = templates.find(t => t.id === templateId);
+			
+			if (!template) {
+				return null;
+			}
+			
+			const checklists = this.getChecklists();
+			const newId = Math.max(...checklists.map(c => c.id), 0) + 1;
+			
+			// יצירת שם אוטומטי עם תאריך
+			const today = new Date().toLocaleDateString('he-IL');
+			const title = `${template.name} - ${today}`;
+			
+			// העתקת המשימות מהתבנית
+			const tasks = template.tasks.map(task => ({
+				...task,
+				completed: false
+			}));
+			
+			const newChecklist = {
+				id: newId,
+				templateId: templateId,
+				type: template.type,
+				title: title,
+				description: template.description,
+				status: 'pending',
+				totalTasks: tasks.length,
+				completedTasks: 0,
+				tasks: tasks,
+				createdAt: new Date().toISOString(),
+				lastUpdate: new Date().toISOString(),
+				createdBy: localStorage.getItem('username') || 'משתמש',
+				assignedTo: localStorage.getItem('username') || 'משתמש',
+				dueTime: null
+			};
+			
+			checklists.push(newChecklist);
+			this.saveChecklists(checklists);
+			return newChecklist;
+		},
+		
+		// עדכון צ'ק ליסט
+		updateChecklist: function(id, data) {
+			const checklists = this.getChecklists();
+			const index = checklists.findIndex(c => c.id === id);
+			
+			if (index !== -1) {
+				checklists[index] = {
+					...checklists[index],
+					...data,
+					lastUpdate: new Date().toISOString()
+				};
+				
+				// עדכון סטטוס אוטומטי
+				if (checklists[index].completedTasks === checklists[index].totalTasks) {
+					checklists[index].status = 'completed';
+				} else if (checklists[index].dueTime && new Date() > new Date(checklists[index].dueTime)) {
+					checklists[index].status = 'overdue';
+				} else if (checklists[index].completedTasks > 0) {
+					checklists[index].status = 'in_progress';
+				}
+				
+				this.saveChecklists(checklists);
+				return checklists[index];
+			}
+			return null;
+		},
+		
+		// מחיקת צ'ק ליסט
+		deleteChecklist: function(id) {
+			const checklists = this.getChecklists();
+			const filtered = checklists.filter(c => c.id !== id);
+			this.saveChecklists(filtered);
+		},
+		
+		// קבלת סטטיסטיקות
+		getStats: function() {
+			const checklists = this.getChecklists();
+			const today = new Date().toDateString();
+			
+			const todayChecklists = checklists.filter(c => 
+				new Date(c.lastUpdate).toDateString() === today
+			);
+			
+			return {
+				completed: todayChecklists.filter(c => c.status === 'completed').length,
+				pending: checklists.filter(c => c.status === 'pending' || c.status === 'in_progress').length,
+				overdue: checklists.filter(c => c.status === 'overdue').length,
+				weeklyCompletion: this.calculateWeeklyCompletion()
+			};
+		},
+		
+		// חישוב אחוז השלמה שבועי
+		calculateWeeklyCompletion: function() {
+			const checklists = this.getChecklists();
+			const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+			
+			const weeklyChecklists = checklists.filter(c => 
+				new Date(c.lastUpdate) >= weekAgo
+			);
+			
+			if (weeklyChecklists.length === 0) return 100;
+			
+			const completed = weeklyChecklists.filter(c => c.status === 'completed').length;
+			return Math.round((completed / weeklyChecklists.length) * 100);
+		}
+	};
+
+	// משימות דחופות
+	const UrgentTasks = {
+		getTasks: function() {
+			const saved = localStorage.getItem('cinema_urgent_tasks');
+			if (saved) {
+				return JSON.parse(saved);
+			}
+			
+			const defaultTasks = [];
+			this.saveTasks(defaultTasks);
+			return defaultTasks;
+		},
+		
+		saveTasks: function(tasks) {
+			localStorage.setItem('cinema_urgent_tasks', JSON.stringify(tasks));
+		},
+		
+		completeTask: function(id) {
+			const tasks = this.getTasks();
+			const index = tasks.findIndex(t => t.id === id);
+			if (index !== -1) {
+				tasks[index].status = 'completed';
+				tasks[index].completedAt = new Date().toISOString();
+				this.saveTasks(tasks);
+			}
+		}
+	};
+
+	// משתנים גלובליים
+	let currentFilter = 'active';
+	let selectedTemplateId = null;
+
+	// פונקציות עזר
+	function hasPermission(permission) {
+		if (typeof PermissionsManager !== 'undefined') {
+			return PermissionsManager.hasPermission(permission);
+		}
+		
+		const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+		
+		if (userRole === 'admin' || userRole === 'manager') {
+			return true;
+		}
+		
+		const rolePermissions = {
+			'supervisor': ['checklist_view', 'checklist_fill', 'checklist_approve', 'checklist_create'],
+			'worker': ['checklist_view', 'checklist_fill'],
+			'usher': ['checklist_view', 'checklist_fill']
+		};
+		
+		return rolePermissions[userRole]?.includes(permission) || false;
+	}
+
+	function getTimeAgo(dateString) {
+		const date = new Date(dateString);
+		const now = new Date();
+		const diff = Math.floor((now - date) / 1000);
+		
+		if (diff < 60) return 'עכשיו';
+		if (diff < 3600) return `לפני ${Math.floor(diff / 60)} דקות`;
+		if (diff < 86400) return `לפני ${Math.floor(diff / 3600)} שעות`;
+		return `לפני ${Math.floor(diff / 86400)} ימים`;
+	}
+
+	function getMinutesAgo(dateString) {
+		const date = new Date(dateString);
+		const now = new Date();
+		return Math.floor((now - date) / 60000);
+	}
+
+	// יצירת צ'ק ליסט חדש - פתיחת מודאל
+	function createNewChecklist() {
+		if (!hasPermission('checklist_create')) {
+			showMessage('אין לך הרשאה ליצור צ\'ק ליסטים חדשים', 'error');
+			return;
+		}
+		
+		loadTemplatesModal();
+		document.getElementById('createChecklistModal').classList.add('active');
+	}
+
+	// טעינת תבניות למודאל
+	function loadTemplatesModal() {
+		const templates = ChecklistTemplates.getTemplates();
+		const grid = document.getElementById('templatesGrid');
+		const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+		
+		grid.innerHTML = '';
+		
+		const typeIcons = {
+			'event': '🎬',
+			'daily': '🏢',
+			'cleaning': '🧹',
+			'safety': '🔒',
+			'maintenance': '🔧',
+			'custom': '📋'
+		};
+		
+		templates.forEach(template => {
+			const card = document.createElement('div');
+			card.className = 'template-card';
+			card.onclick = () => selectTemplate(template.id);
+			
+			card.innerHTML = `
+				<span class="template-badge ${template.isSystem ? 'system' : 'custom'}">
+					${template.isSystem ? 'מערכת' : 'מותאם אישית'}
+				</span>
+				<span class="template-icon">${typeIcons[template.type] || '📋'}</span>
+				<div class="template-name">${template.name}</div>
+				<div class="template-description">${template.description}</div>
+				<div class="template-info">
+					<span class="template-tasks-count">${template.tasks.length} משימות</span>
+					<span>${template.createdBy}</span>
+				</div>
+			`;
+			
+			grid.appendChild(card);
+		});
+		
+		// הצג כפתור יצירת תבנית למנהלים
+		if (userRole === 'admin') {
+			document.getElementById('adminCreateTemplateBtn').style.display = 'inline-block';
+		}
+	}
+
+	// בחירת תבנית
+	function selectTemplate(templateId) {
+		// הסר בחירה קודמת
+		document.querySelectorAll('.template-card').forEach(card => {
+			card.classList.remove('selected');
+		});
+		
+		// סמן את הכרטיס הנבחר
+		event.currentTarget.classList.add('selected');
+		selectedTemplateId = templateId;
+		
+		// יצירת הצ'ק ליסט אוטומטית
+		setTimeout(() => {
+			createChecklistFromTemplate();
+		}, 300);
+	}
+
+	// יצירת צ'ק ליסט מהתבנית הנבחרת
+	function createChecklistFromTemplate() {
+		if (!selectedTemplateId) {
+			showMessage('אנא בחר תבנית', 'error');
+			return;
+		}
+		
+		const newChecklist = ChecklistsDB.createFromTemplate(selectedTemplateId);
+		
+		if (newChecklist) {
+			closeModal();
+			showMessage(`צ'ק ליסט "${newChecklist.title}" נוצר בהצלחה!`, 'success');
+			loadDashboard();
+			
+			// פתח את הצ'ק ליסט החדש
+			setTimeout(() => {
+				continueChecklist(newChecklist.id);
+			}, 1000);
+		}
+	}
+
+	// סגירת מודאל
+	function closeModal() {
+		document.getElementById('createChecklistModal').classList.remove('active');
+		selectedTemplateId = null;
+	}
+
+	// פתיחת יוצר תבניות (למנהלים)
+	function openTemplateCreator() {
+		closeModal();
+		document.getElementById('createTemplateModal').classList.add('active');
+		
+		// אתחול עם משימה אחת
+		document.getElementById('tasksList').innerHTML = `
+			<div class="task-input-group">
+				<input type="text" placeholder="משימה 1" class="task-input">
+				<label><input type="checkbox" checked> חובה</label>
+			</div>
+		`;
+	}
+
+	// סגירת מודאל תבנית
+	function closeTemplateModal() {
+		document.getElementById('createTemplateModal').classList.remove('active');
+	}
+
+	// הוספת שדה משימה
+	function addTaskInput() {
+		const tasksList = document.getElementById('tasksList');
+		const taskCount = tasksList.querySelectorAll('.task-input-group').length + 1;
+		
+		const taskGroup = document.createElement('div');
+		taskGroup.className = 'task-input-group';
+		taskGroup.innerHTML = `
+			<input type="text" placeholder="משימה ${taskCount}" class="task-input">
+			<label><input type="checkbox" checked> חובה</label>
+			<button onclick="removeTaskInput(this)">הסר</button>
+		`;
+		
+		tasksList.appendChild(taskGroup);
+	}
+
+	// הסרת שדה משימה
+	function removeTaskInput(button) {
+		button.parentElement.remove();
+	}
+
+	// שמירת תבנית חדשה
+	function saveTemplate() {
+		const name = document.getElementById('templateName').value.trim();
+		const description = document.getElementById('templateDescription').value.trim();
+		const type = document.getElementById('templateType').value;
+		
+		if (!name) {
+			showMessage('נא להזין שם תבנית', 'error');
+			return;
+		}
+		
+		// איסוף משימות
+		const tasks = [];
+		document.querySelectorAll('.task-input-group').forEach((group, index) => {
+			const input = group.querySelector('.task-input');
+			const checkbox = group.querySelector('input[type="checkbox"]');
+			
+			if (input.value.trim()) {
+				tasks.push({
+					id: index + 1,
+					title: input.value.trim(),
+					required: checkbox.checked
+				});
+			}
+		});
+		
+		if (tasks.length === 0) {
+			showMessage('נא להוסיף לפחות משימה אחת', 'error');
+			return;
+		}
+		
+		// שמירת התבנית
+		const newTemplate = ChecklistTemplates.addTemplate({
+			name: name,
+			type: type,
+			description: description,
+			tasks: tasks
+		});
+		
+		closeTemplateModal();
+		showMessage(`תבנית "${name}" נוצרה בהצלחה!`, 'success');
+		
+		// שאל אם ליצור צ'ק ליסט מהתבנית
+		setTimeout(() => {
+			if (confirm('האם ליצור צ\'ק ליסט מהתבנית החדשה?')) {
+				const checklist = ChecklistsDB.createFromTemplate(newTemplate.id);
+				if (checklist) {
+					showMessage(`צ'ק ליסט "${checklist.title}" נוצר בהצלחה!`, 'success');
+					loadDashboard();
+				}
+			}
+		}, 500);
+	}
+
+	// הצגת הודעה
+	function showMessage(text, type = 'success') {
+		const messageDiv = document.createElement('div');
+		messageDiv.className = 'success-message';
+		messageDiv.style.background = type === 'error' ? '#dc3545' : '#28a745';
+		messageDiv.textContent = text;
+		
+		document.body.appendChild(messageDiv);
+		
+		setTimeout(() => {
+			messageDiv.remove();
+		}, 3000);
+	}
+
+	// המשך צ'ק ליסט קיים
+	function continueChecklist(id) {
+		if (!hasPermission('checklist_fill')) {
+			showMessage('אין לך הרשאה למלא צ\'ק ליסטים', 'error');
+			return;
+		}
+		
+		const checklist = ChecklistsDB.getChecklists().find(c => c.id === id);
+		if (!checklist) {
+			showMessage('צ\'ק ליסט לא נמצא', 'error');
+			return;
+		}
+		
+		sessionStorage.setItem('currentChecklistId', id);
+		
+		// נתב לדף המתאים
+		if (checklist.type === 'event' || checklist.type === 'daily' || checklist.type === 'cleaning') {
+			const paths = {
+				'event': 'event-check.html',
+				'daily': 'daily-closing.html',
+				'cleaning': 'cleaning.html'
+			};
+			window.location.href = paths[checklist.type];
+		} else {
+			window.location.href = 'custom-checklist.html';
+		}
+	}
+
+	// עריכת צ'ק ליסט
+	function editChecklist(id) {
+		if (!hasPermission('checklist_create')) {
+			showMessage('אין לך הרשאה לערוך צ\'ק ליסטים', 'error');
+			return;
+		}
+		
+		const checklist = ChecklistsDB.getChecklists().find(c => c.id === id);
+		if (!checklist) return;
+		
+		const newTitle = prompt('ערוך כותרת:', checklist.title);
+		if (newTitle && newTitle !== checklist.title) {
+			ChecklistsDB.updateChecklist(id, { title: newTitle });
+			loadDashboard();
+		}
+	}
+
+	// מחיקת צ'ק ליסט עם אישור
+	function deleteChecklistConfirm(id) {
+		if (!hasPermission('checklist_create')) {
+			showMessage('אין לך הרשאה למחוק צ\'ק ליסטים', 'error');
+			return;
+		}
+		
+		const checklist = ChecklistsDB.getChecklists().find(c => c.id === id);
+		if (!checklist) return;
+		
+		if (confirm(`האם למחוק את הצ\'ק ליסט "${checklist.title}"?`)) {
+			ChecklistsDB.deleteChecklist(id);
+			loadDashboard();
+		}
+	}
+
+	// טעינת הדאשבורד
+	function loadDashboard() {
+		// טעינת סטטיסטיקות
+		const stats = ChecklistsDB.getStats();
+		document.querySelectorAll('.stat-value')[0].textContent = stats.completed;
+		document.querySelectorAll('.stat-value')[1].textContent = stats.pending;
+		document.querySelectorAll('.stat-value')[2].textContent = stats.overdue;
+		document.querySelectorAll('.stat-value')[3].textContent = stats.weeklyCompletion + '%';
+		
+		// טעינת צ'ק ליסטים
+		loadChecklists();
+		
+		// טעינת משימות דחופות
+		loadUrgentTasks();
+	}
+
+	// טעינת צ'ק ליסטים
+	function loadChecklists() {
+		const checklists = ChecklistsDB.getChecklists();
+		const container = document.querySelector('.checklist-types');
+		
+		// סינון לפי המצב הנוכחי
+		let filteredChecklists = checklists;
+		if (currentFilter === 'active') {
+			filteredChecklists = checklists.filter(c => 
+				c.status === 'pending' || c.status === 'in_progress' || c.status === 'overdue'
+			);
+		} else if (currentFilter === 'completed') {
+			filteredChecklists = checklists.filter(c => c.status === 'completed');
+		}
+		
+		// אם אין צ'ק ליסטים להצגה
+		if (filteredChecklists.length === 0) {
+			container.innerHTML = `
+				<div style="text-align: center; padding: 40px; color: #666;">
+					<div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+					<div style="font-size: 18px;">אין צ'ק ליסטים ${currentFilter === 'completed' ? 'שהושלמו' : 'פעילים'}</div>
+					${hasPermission('checklist_create') ? 
+						`<button class="btn btn-primary" onclick="createNewChecklist()" style="margin-top: 20px;">
+							צור צ'ק ליסט חדש
+						</button>` : ''
+					}
+				</div>
+			`;
+			return;
+		}
+		
+		container.innerHTML = '';
+		
+		filteredChecklists.forEach(checklist => {
+			const progress = checklist.totalTasks > 0 ? 
+				Math.round((checklist.completedTasks / checklist.totalTasks) * 100) : 0;
+			
+			const statusClass = checklist.status === 'completed' ? 'status-complete' : 
+							   checklist.status === 'overdue' ? 'status-overdue' : 
+							   checklist.status === 'in_progress' ? 'status-pending' : 'status-pending';
+			
+			const statusText = checklist.status === 'completed' ? 'הושלם' :
+							  checklist.status === 'overdue' ? 'באיחור' :
+							  checklist.status === 'in_progress' ? 'בתהליך' : 'ממתין';
+			
+			const lastUpdate = getTimeAgo(checklist.lastUpdate);
+			
+			const typeIcons = {
+				'event': '🎬',
+				'daily': '🏢',
+				'cleaning': '🧹',
+				'safety': '🔒',
+				'maintenance': '🔧',
+				'custom': '📋'
+			};
+			
+			const html = `
+				<div class="checklist-type ${checklist.type}" data-id="${checklist.id}">
+					<div class="type-header" onclick="continueChecklist(${checklist.id})">
+						<div class="type-title">
+							<div class="type-icon ${checklist.type}">${typeIcons[checklist.type] || '📋'}</div>
+							<div>
+								<div>${checklist.title}</div>
+								<div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
+									${checklist.assignedTo} | ID: ${checklist.id}
+								</div>
+							</div>
+						</div>
+						<div class="type-status">
+							<div class="status-indicator ${statusClass}"></div>
+							<span>${statusText}</span>
+						</div>
+					</div>
+					<div class="type-description">${checklist.description}</div>
+					<div class="type-progress">
+						<div class="progress-bar ${checklist.type}" style="width: ${progress}%;"></div>
+					</div>
+					<div class="type-footer">
+						<div class="tasks-count">${checklist.completedTasks}/${checklist.totalTasks} משימות</div>
+						<div class="last-update">${lastUpdate}</div>
+						<div style="margin-top: 10px; display: flex; gap: 10px;">
+							${checklist.status !== 'completed' && hasPermission('checklist_fill') ? 
+								`<button class="btn btn-primary" onclick="event.stopPropagation(); continueChecklist(${checklist.id})" style="padding: 5px 15px; font-size: 12px;">
+									המשך צ'ק ליסט
+								</button>` : ''
+							}
+							${hasPermission('checklist_create') ?
+								`<button class="btn btn-secondary" onclick="event.stopPropagation(); editChecklist(${checklist.id})" style="padding: 5px 15px; font-size: 12px;">
+									ערוך
+								</button>
+								<button class="btn btn-danger" onclick="event.stopPropagation(); deleteChecklistConfirm(${checklist.id})" style="padding: 5px 15px; font-size: 12px; background: #ff4757;">
+									מחק
+								</button>` : ''
+							}
+						</div>
+					</div>
+				</div>
+			`;
+			
+			container.innerHTML += html;
+		});
+	}
+
+	// טעינת משימות דחופות
+	function loadUrgentTasks() {
+		const tasks = UrgentTasks.getTasks().filter(t => t.status === 'open');
+		const container = document.querySelector('.task-list');
+		
+		if (tasks.length === 0) {
+			container.innerHTML = `
+				<div style="text-align: center; padding: 20px; color: #666;">
+					אין משימות דחופות 🎉
+				</div>
+			`;
+			return;
+		}
+		
+		container.innerHTML = '';
+		
+		tasks.forEach(task => {
+			const typeClass = task.type === 'urgent' ? 'urgent' : 
+							 task.type === 'overdue' ? 'overdue' : '';
+			
+			const priorityClass = task.priority === 'high' ? 'priority-high' : 'priority-medium';
+			const priorityText = task.priority === 'high' ? 'דחוף' : 'רגיל';
+			
+			const timeText = task.dueIn ? `נותר ${task.dueIn} דקות` : 
+							task.type === 'overdue' ? `איחור של ${getMinutesAgo(task.createdAt)} דקות` :
+							`נפתח ${getTimeAgo(task.createdAt)}`;
+			
+			const html = `
+				<div class="task-item ${typeClass}">
+					<div class="task-header">
+						<div class="task-title">${task.title}</div>
+						<div class="task-priority ${priorityClass}">${priorityText}</div>
+					</div>
+					<div class="task-details">${task.description}</div>
+					<div class="task-footer">
+						<div class="task-time">${timeText}</div>
+						${hasPermission('checklist_fill') ?
+							`<button class="task-action" onclick="handleTask(${task.id})">טפל עכשיו</button>` :
+							''
+						}
+					</div>
+				</div>
+			`;
+			
+			container.innerHTML += html;
+		});
+	}
+
+	// הצגת היסטוריה מפורטת
+	function showHistory() {
+		if (!hasPermission('checklist_view')) {
+			showMessage('אין לך הרשאה לצפות בהיסטוריה', 'error');
+			return;
+		}
+		
+		// הוסף כפתורי סינון
+		const filterButtons = `
+			<div style="margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
+				<button class="btn ${currentFilter === 'all' ? 'btn-primary' : 'btn-secondary'}" 
+						onclick="setFilter('all')" style="padding: 8px 16px;">
+					הכל
+				</button>
+				<button class="btn ${currentFilter === 'active' ? 'btn-primary' : 'btn-secondary'}" 
+						onclick="setFilter('active')" style="padding: 8px 16px;">
+					פעילים
+				</button>
+				<button class="btn ${currentFilter === 'completed' ? 'btn-primary' : 'btn-secondary'}" 
+						onclick="setFilter('completed')" style="padding: 8px 16px;">
+					הושלמו
+				</button>
+			</div>
+		`;
+		
+		// הוסף את כפתורי הסינון לאזור הראשי
+		const container = document.querySelector('.container');
+		const existingFilter = container.querySelector('.filter-buttons');
+		if (!existingFilter) {
+			const filterDiv = document.createElement('div');
+			filterDiv.className = 'filter-buttons';
+			filterDiv.innerHTML = filterButtons;
+			container.insertBefore(filterDiv, container.querySelector('.checklist-types'));
+		}
+	}
+
+	// הגדרת פילטר
+	function setFilter(filter) {
+		currentFilter = filter;
+		loadDashboard();
+		
+		// עדכון כפתורי הסינון
+		const buttons = document.querySelectorAll('.filter-buttons button');
+		buttons.forEach(btn => {
+			if (btn.textContent.includes('הכל') && filter === 'all' ||
+				btn.textContent.includes('פעילים') && filter === 'active' ||
+				btn.textContent.includes('הושלמו') && filter === 'completed') {
+				btn.className = 'btn btn-primary';
+			} else {
+				btn.className = 'btn btn-secondary';
+			}
+		});
+	}
+
+	// ייצוא דוח מפורט
+	function exportReport() {
+		if (!hasPermission('reports_export')) {
+			showMessage('אין לך הרשאה לייצא דוחות', 'error');
+			return;
+		}
+		
+		const stats = ChecklistsDB.getStats();
+		const checklists = ChecklistsDB.getChecklists();
+		
+		let report = 'דוח צ\'ק ליסטים - סינמה סיטי\n';
+		report += '=' .repeat(50) + '\n\n';
+		report += `תאריך: ${new Date().toLocaleDateString('he-IL')}\n`;
+		report += `שעה: ${new Date().toLocaleTimeString('he-IL')}\n`;
+		report += `מפיק הדוח: ${localStorage.getItem('username') || 'משתמש'}\n\n`;
+		
+		report += 'סטטיסטיקות:\n';
+		report += '-'.repeat(30) + '\n';
+		report += `• הושלמו היום: ${stats.completed}\n`;
+		report += `• ממתינות: ${stats.pending}\n`;
+		report += `• באיחור: ${stats.overdue}\n`;
+		report += `• השלמה שבועית: ${stats.weeklyCompletion}%\n\n`;
+		
+		report += 'רשימת צ\'ק ליסטים:\n';
+		report += '-'.repeat(30) + '\n';
+		
+		// מיון לפי סטטוס
+		const sorted = checklists.sort((a, b) => {
+			const statusOrder = { 'overdue': 0, 'in_progress': 1, 'pending': 2, 'completed': 3 };
+			return statusOrder[a.status] - statusOrder[b.status];
+		});
+		
+		sorted.forEach(c => {
+			const progress = c.totalTasks > 0 ? 
+				Math.round((c.completedTasks / c.totalTasks) * 100) : 0;
+			
+			report += `\n[${c.id}] ${c.title}\n`;
+			report += `  סטטוס: ${c.status}\n`;
+			report += `  התקדמות: ${c.completedTasks}/${c.totalTasks} (${progress}%)\n`;
+			report += `  אחראי: ${c.assignedTo}\n`;
+			report += `  עדכון אחרון: ${new Date(c.lastUpdate).toLocaleString('he-IL')}\n`;
+		});
+		
+		// הורדת הקובץ
+		const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `checklist_report_${new Date().getTime()}.txt`;
+		a.click();
+		URL.revokeObjectURL(url);
+		
+		showMessage('הדוח הורד בהצלחה!', 'success');
+	}
+
+	// טיפול במשימה דחופה
+	function handleTask(taskId) {
+		if (!hasPermission('checklist_fill')) {
+			showMessage('אין לך הרשאה לטפל במשימות', 'error');
+			return;
+		}
+		
+		if (confirm('האם המשימה טופלה?')) {
+			UrgentTasks.completeTask(taskId);
+			loadUrgentTasks();
+			showMessage('המשימה סומנה כהושלמה', 'success');
+		}
+	}
+
+	// חזרה לדאשבורד
+	function goBack() {
+		window.location.href = '../../index.html';
+	}
+
+	// הסתרת אלמנטים לפי הרשאות
+	function updateUIPermissions() {
+		if (!hasPermission('checklist_create')) {
+			const createBtn = document.querySelector('.btn-primary[onclick*="createNewChecklist"]');
+			if (createBtn) createBtn.style.display = 'none';
+		}
+		
+		if (!hasPermission('reports_export')) {
+			const exportBtn = document.querySelector('.btn-secondary[onclick*="exportReport"]');
+			if (exportBtn) exportBtn.style.display = 'none';
+		}
+	}
+
+	// עדכון נתונים בזמן אמת
+	function updateStats() {
+		loadDashboard();
+	}
+
+	// טעינה ראשונית
+	window.addEventListener('load', function() {
+		if (!localStorage.getItem('rememberMe') && !sessionStorage.getItem('isLoggedIn')) {
+			window.location.href = '../../login.html';
+		}
+		
+		loadDashboard();
+		updateUIPermissions();
+		showHistory();
+	});
+
+	// עדכון כל 30 שניות
+	setInterval(updateStats, 30000);
+
+	// אנימציה לכרטיסים
+	document.addEventListener('DOMContentLoaded', function() {
+		const cards = document.querySelectorAll('.checklist-type, .task-item');
+		cards.forEach((card, index) => {
+			card.style.opacity = '0';
+			card.style.transform = 'translateY(20px)';
+			setTimeout(() => {
+				card.style.transition = 'all 0.6s ease';
+				card.style.opacity = '1';
+				card.style.transform = 'translateY(0)';
+			}, index * 150);
+		});
+	});
+	</script>
+
+	<!-- טעינת מערכת ההרשאות -->
+	<script src="../../assets/js/permissions.js"></script>
+</body>
+</html>

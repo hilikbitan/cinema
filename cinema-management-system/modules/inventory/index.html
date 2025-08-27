@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול מלאי - סינמה סיטי חדרה</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/inventory.css">
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <div class="module-header">
+        <button class="back-btn" onclick="window.location.href='../../index.html'">
+            ← חזרה
+        </button>
+        <h1 class="module-title">📦 ניהול מלאי</h1>
+        <div class="header-actions">
+            <span class="user-info" id="userInfo"></span>
+            <button class="logout-btn" onclick="logout()">יציאה</button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>סה"כ מוצרים</h3>
+            <div class="stat-value" id="totalProducts">0</div>
+        </div>
+        <div class="stat-card warning">
+            <h3>מלאי נמוך</h3>
+            <div class="stat-value" id="lowStockCount">0</div>
+        </div>
+        <div class="stat-card danger">
+            <h3>תפוגה קרובה</h3>
+            <div class="stat-value" id="expiringCount">0</div>
+        </div>
+        <div class="stat-card success">
+            <h3>תנועות היום</h3>
+            <div class="stat-value" id="todayMovements">0</div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active" data-tab="inventory" onclick="showTab(event, 'inventory')">
+                מלאי נוכחי
+            </div>
+            <div class="tab" data-tab="movements" onclick="showTab(event, 'movements')">
+                תנועות מלאי
+            </div>
+            <div class="tab" data-tab="transaction" onclick="showTab(event, 'transaction')">
+                רישום תנועה
+            </div>
+            <div class="tab" data-tab="addItem" onclick="showTab(event, 'addItem')">
+                הוספת פריט
+            </div>
+            <div class="tab" data-tab="reports" onclick="showTab(event, 'reports')">
+                דוחות
+            </div>
+            <div class="tab" data-tab="pickings" onclick="showTab(event, 'pickings')">
+                ליקוטים
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="content-area">
+        <!-- Inventory Tab -->
+        <div id="inventory" class="tab-content active">
+            <div class="tab-header">
+                <h2>מלאי נוכחי</h2>
+                <div class="filters">
+                    <input type="text" id="inventorySearch" placeholder="חפש מוצר..." class="search-input">
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">כל הקטגוריות</option>
+                        <option value="מזון">מזון</option>
+                        <option value="שתייה">שתייה</option>
+                        <option value="אחר">אחר</option>
+                    </select>
+                    <button onclick="displayInventory()" class="btn-primary">רענן</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortInventory('name')">מוצר ↕</th>
+                            <th onclick="sortInventory('category')">קטגוריה ↕</th>
+                            <th onclick="sortInventory('totalPacks')">כמות ↕</th>
+                            <th>ערך במלאי</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryBody">
+                        <!-- Inventory rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Movements Tab -->
+        <div id="movements" class="tab-content">
+            <div class="tab-header">
+                <h2>תנועות מלאי</h2>
+                <div class="filters">
+                    <input type="date" id="movementsDateFilter" class="date-input">
+                    <select id="movementsTypeFilter" class="filter-select">
+                        <option value="">כל הסוגים</option>
+                        <option value="הכנסה">הכנסה</option>
+                        <option value="הוצאה">הוצאה</option>
+                    </select>
+                    <button onclick="displayMovements()" class="btn-primary">סנן</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>תאריך ושעה</th>
+                            <th>מוצר</th>
+                            <th>סוג תנועה</th>
+                            <th>כמות</th>
+                            <th>מבצע</th>
+                            <th>הערות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movementsBody">
+                        <!-- Movement rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Transaction Tab -->
+        <div id="transaction" class="tab-content">
+            <div class="tab-header">
+                <h2>רישום תנועת מלאי</h2>
+            </div>
+            <form id="multiTransactionForm" class="transaction-form">
+                <div class="form-group">
+                    <label>סוג תנועה:</label>
+                    <select id="transactionType" class="form-select" required>
+                        <option value="">בחר סוג</option>
+                        <option value="הכנסה">הכנסה למלאי</option>
+                        <option value="הוצאה">הוצאה מהמלאי</option>
+                    </select>
+                </div>
+                
+                <div id="multiTransactionRows" class="transaction-rows">
+                    <!-- Transaction rows will be added here -->
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="addTransactionRow()" class="btn-secondary">
+                        + הוסף שורה
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        בצע תנועות
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Add Item Tab -->
+        <div id="addItem" class="tab-content">
+            <div class="tab-header">
+                <h2>הוספת פריט חדש</h2>
+            </div>
+            <form id="addItemForm" class="item-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>שם המוצר:</label>
+                        <input type="text" id="itemName" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>קטגוריה:</label>
+                        <select id="itemCategory" required class="form-select">
+                            <option value="">בחר קטגוריה</option>
+                            <option value="מזון">מזון</option>
+                            <option value="שתייה">שתייה</option>
+                            <option value="אחר">אחר</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>יחידת בסיס (יחיד):</label>
+                        <select id="baseUnitSingular" required class="form-select">
+                            <!-- Options will be populated -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>יחידת בסיס (רבים):</label>
+                        <select id="baseUnitPlural" required class="form-select">
+                            <!-- Options will be populated -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>יחידת אריזה (יחיד):</label>
+                        <select id="packUnitSingular" required class="form-select">
+                            <!-- Options will be populated -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>יחידת אריזה (רבים):</label>
+                        <select id="packUnitPlural" required class="form-select">
+                            <!-- Options will be populated -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>יחידות באריזה:</label>
+                        <input type="number" id="unitsPerPack" min="1" value="1" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>מלאי מינימלי:</label>
+                        <input type="number" id="minPacks" min="0" value="0" required class="form-input">
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">הוסף מוצר</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <div class="tab-header">
+                <h2>דוחות</h2>
+            </div>
+            <div class="reports-grid">
+                <div class="report-card" onclick="generateReport('inventory')">
+                    <div class="report-icon">📊</div>
+                    <h3>דוח מלאי מלא</h3>
+                    <p>רשימת כל המוצרים במלאי</p>
+                </div>
+                <div class="report-card" onclick="generateReport('movements')">
+                    <div class="report-icon">📈</div>
+                    <h3>דוח תנועות</h3>
+                    <p>כל התנועות בתקופה</p>
+                </div>
+                <div class="report-card" onclick="generateReport('expiring')">
+                    <div class="report-icon">⚠️</div>
+                    <h3>דוח תפוגות</h3>
+                    <p>מוצרים לתפוגה קרובה</p>
+                </div>
+                <div class="report-card" onclick="generateReport('lowstock')">
+                    <div class="report-icon">🔴</div>
+                    <h3>דוח מלאי נמוך</h3>
+                    <p>מוצרים מתחת למינימום</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pickings Tab -->
+        <div id="pickings" class="tab-content">
+            <div class="tab-header">
+                <h2>ניהול ליקוטים</h2>
+                <button onclick="createNewPicking()" class="btn-primary">
+                    + ליקוט חדש
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>תאריך</th>
+                            <th>שם הליקוט</th>
+                            <th>סטטוס</th>
+                            <th>מבצע</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pickingsBody">
+                        <!-- Picking rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">טוען נתונים...</div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>עריכת מוצר</h2>
+            <form id="editItemForm">
+                <input type="hidden" id="editItemOriginalName">
+                <!-- Edit form fields will be similar to add item form -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">שמור שינויים</button>
+                    <button type="button" onclick="closeEditModal()" class="btn-secondary">ביטול</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/inventory-utils.js"></script>
+    <script src="assets/js/inventory.js"></script>
+    <script src="assets/js/inventory-handlers.js"></script>
+</body>
+</html>
