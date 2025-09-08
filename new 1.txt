@@ -1,0 +1,356 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const fs = require('fs').promises;
+const multer = require('multer');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Serve static files from root
+app.use(express.static(path.join(__dirname, '..')));
+
+// File upload configuration
+const storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+        const uploadPath = path.join(__dirname, 'uploads');
+        try {
+            await fs.mkdir(uploadPath, { recursive: true });
+        } catch (err) {
+            console.error('Error creating uploads directory:', err);
+        }
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
+
+// Simple RBAC middleware
+const checkRole = (allowedRoles) => {
+    return (req, res, next) => {
+        const userRole = req.headers['x-user-role'] || 'staff';
+        if (allowedRoles.includes(userRole)) {
+            next();
+        } else {
+            res.status(403).json({ error: 'Insufficient permissions' });
+        }
+    };
+};
+
+// Helper function to read JSON file
+const readJsonFile = async (filename) => {
+    try {
+        const filePath = path.join(__dirname, 'data', filename);
+        const data = await fs.readFile(filePath, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error(`Error reading ${filename}:`, error);
+        return [];
+    }
+};
+
+// Helper function to write JSON file
+const writeJsonFile = async (filename, data) => {
+    try {
+        const filePath = path.join(__dirname, 'data', filename);
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+        return true;
+    } catch (error) {
+        console.error(`Error writing ${filename}:`, error);
+        return false;
+    }
+};
+
+// Initialize data files if they don't exist
+const initializeDataFiles = async () => {
+    const dataPath = path.join(__dirname, 'data');
+    try {
+        await fs.mkdir(dataPath, { recursive: true });
+        
+        const files = [
+            'checklist_templates.json',
+            'checklist_submissions.json',
+            'training_tracks.json',
+            'training_progress.json',
+            'inventory.json',
+            'reports.json',
+            'alerts.json'
+        ];
+        
+        for (const file of files) {
+            const filePath = path.join(dataPath, file);
+            try {
+                await fs.access(filePath);
+            } catch {
+                // File doesn't exist, create it
+                const initialData = file.includes('templates') || file.includes('tracks') || file.includes('inventory') 
+                    ? await getInitialData(file) 
+                    : [];
+                await writeJsonFile(file, initialData);
+            }
+        }
+    } catch (error) {
+        console.error('Error initializing data files:', error);
+    }
+};
+
+// Get initial data for specific files
+const getInitialData = async (filename) => {
+    if (filename === 'checklist_templates.json') {
+        const templates = await readJsonFile('checklist_templates.json');
+        return templates.length ? templates : require('./data/checklist_templates.json');
+    }
+    if (filename === 'training_tracks.json') {
+        const tracks = await readJsonFile('training_tracks.json');
+        return tracks.length ? tracks : require('./data/training_tracks.json');
+    }
+    if (filename === 'inventory.json') {
+        const inventory = await readJsonFile('inventory.json');
+        return inventory.length ? inventory : require('./data/inventory.json');
+    }
+    return [];
+};
+
+// API Routes
+
+// Checklist Templates
+app.get('/api/checklists/templates', async (req, res) => {
+    const templates = await readJsonFile('checklist_templates.json');
+    res.json(templates);
+});
+
+app.get('/api/checklists/templates/:id', async (req, res) => {
+    const templates = await readJsonFile('checklist_templates.json');
+    const template = templates.find(t => t.id === req.params.id);
+    if (template) {
+        res.json(template);
+    } else {
+        res.status(404).json({ error: 'Template not found' });
+    }
+});
+
+// Checklist Submissions
+app.get('/api/checklists/submissions', async (req, res) => {
+    const submissions = await readJsonFile('checklist_submissions.json');
+    res.json(submissions);
+});
+
+app.post('/api/checklists/submissions', checkRole(['admin', 'supervisor', 'staff']), async (req, res) => {
+    const submissions = await readJsonFile('checklist_submissions.json');
+    const newSubmission = {
+        id: `sub_${Date.now()}`,
+        ...req.body,
+        created_at: new Date().toISOString()
+    };
+    submissions.push(newSubmission);
+    await writeJsonFile('checklist_submissions.json', submissions);
+    
+    // Check for failures and create alerts
+    if (req.body.status === 'submitted') {
+        const failedItems = Object.entries(req.body.values)
+            .filter(([key, value]) => value === false);
+        
+        if (failedItems.length > 0) {
+            const alerts = await readJsonFile('alerts.json');
+            const newAlert = {
+                id: `alert_${Date.now()}`,
+                type: 'checklist_failure',
+                severity: 'medium',
+                source: `Checklist: ${req.body.template_id}`,
+                message: `${failedItems.length} items failed in checklist submission`,
+                created_at: new Date().toISOString(),
+                status: 'open'
+            };
+            alerts.push(newAlert);
+            await writeJsonFile('alerts.json', alerts);
+        }
+    }
+    
+    res.status(201).json(newSubmission);
+});
+
+app.patch('/api/checklists/submissions/:id', checkRole(['admin', 'supervisor', 'staff']), async (req, res) => {
+    const submissions = await readJsonFile('checklist_submissions.json');
+    const index = submissions.findIndex(s => s.id === req.params.id);
+    
+    if (index !== -1) {
+        submissions[index] = { ...submissions[index], ...req.body };
+        await writeJsonFile('checklist_submissions.json', submissions);
+        res.json(submissions[index]);
+    } else {
+        res.status(404).json({ error: 'Submission not found' });
+    }
+});
+
+// Training
+app.get('/api/training', async (req, res) => {
+    const tracks = await readJsonFile('training_tracks.json');
+    const progress = await readJsonFile('training_progress.json');
+    res.json({ tracks, progress });
+});
+
+app.patch('/api/training/:id', checkRole(['admin', 'supervisor']), async (req, res) => {
+    const progress = await readJsonFile('training_progress.json');
+    const existingIndex = progress.findIndex(p => p.track_id === req.params.id && p.user === req.body.user);
+    
+    if (existingIndex !== -1) {
+        progress[existingIndex] = { ...progress[existingIndex], ...req.body };
+    } else {
+        progress.push({
+            track_id: req.params.id,
+            user: req.body.user,
+            ...req.body,
+            updated_at: new Date().toISOString()
+        });
+    }
+    
+    await writeJsonFile('training_progress.json', progress);
+    res.json({ success: true });
+});
+
+// Inventory
+app.get('/api/inventory', async (req, res) => {
+    const inventory = await readJsonFile('inventory.json');
+    res.json(inventory);
+});
+
+app.post('/api/inventory', checkRole(['admin', 'supervisor']), async (req, res) => {
+    const inventory = await readJsonFile('inventory.json');
+    const newItem = {
+        sku: `SKU_${Date.now()}`,
+        ...req.body
+    };
+    inventory.push(newItem);
+    await writeJsonFile('inventory.json', inventory);
+    
+    // Check for low stock
+    if (newItem.on_hand < newItem.par_level * 0.3) {
+        const alerts = await readJsonFile('alerts.json');
+        alerts.push({
+            id: `alert_${Date.now()}`,
+            type: 'low_stock',
+            severity: 'high',
+            source: `Inventory: ${newItem.name}`,
+            message: `Low stock alert: ${newItem.name} (${newItem.on_hand} ${newItem.unit})`,
+            created_at: new Date().toISOString(),
+            status: 'open'
+        });
+        await writeJsonFile('alerts.json', alerts);
+    }
+    
+    res.status(201).json(newItem);
+});
+
+app.patch('/api/inventory/:sku', checkRole(['admin', 'supervisor']), async (req, res) => {
+    const inventory = await readJsonFile('inventory.json');
+    const index = inventory.findIndex(item => item.sku === req.params.sku);
+    
+    if (index !== -1) {
+        const updatedItem = { ...inventory[index], ...req.body };
+        inventory[index] = updatedItem;
+        await writeJsonFile('inventory.json', inventory);
+        
+        // Check for low stock after update
+        if (updatedItem.on_hand < updatedItem.par_level * 0.3) {
+            const alerts = await readJsonFile('alerts.json');
+            const existingAlert = alerts.find(a => 
+                a.type === 'low_stock' && 
+                a.source === `Inventory: ${updatedItem.name}` &&
+                a.status === 'open'
+            );
+            
+            if (!existingAlert) {
+                alerts.push({
+                    id: `alert_${Date.now()}`,
+                    type: 'low_stock',
+                    severity: 'high',
+                    source: `Inventory: ${updatedItem.name}`,
+                    message: `Low stock alert: ${updatedItem.name} (${updatedItem.on_hand} ${updatedItem.unit})`,
+                    created_at: new Date().toISOString(),
+                    status: 'open'
+                });
+                await writeJsonFile('alerts.json', alerts);
+            }
+        }
+        
+        res.json(updatedItem);
+    } else {
+        res.status(404).json({ error: 'Item not found' });
+    }
+});
+
+// Reports
+app.get('/api/reports', async (req, res) => {
+    const reports = await readJsonFile('reports.json');
+    res.json(reports);
+});
+
+app.post('/api/reports/upload', upload.single('file'), checkRole(['admin', 'supervisor', 'staff']), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+    
+    const reports = await readJsonFile('reports.json');
+    const newReport = {
+        id: `report_${Date.now()}`,
+        title: req.body.title || req.file.originalname,
+        dept: req.body.dept || 'other',
+        date: new Date().toISOString(),
+        file_path: `/api/reports/download/${req.file.filename}`,
+        notes: req.body.notes || ''
+    };
+    
+    reports.push(newReport);
+    await writeJsonFile('reports.json', reports);
+    res.status(201).json(newReport);
+});
+
+app.get('/api/reports/download/:filename', async (req, res) => {
+    const filePath = path.join(__dirname, 'uploads', req.params.filename);
+    res.download(filePath);
+});
+
+// Alerts
+app.get('/api/alerts', async (req, res) => {
+    const alerts = await readJsonFile('alerts.json');
+    const openAlerts = alerts.filter(a => a.status === 'open');
+    res.json(openAlerts);
+});
+
+app.patch('/api/alerts/:id', checkRole(['admin', 'supervisor']), async (req, res) => {
+    const alerts = await readJsonFile('alerts.json');
+    const index = alerts.findIndex(a => a.id === req.params.id);
+    
+    if (index !== -1) {
+        alerts[index] = { ...alerts[index], ...req.body };
+        await writeJsonFile('alerts.json', alerts);
+        res.json(alerts[index]);
+    } else {
+        res.status(404).json({ error: 'Alert not found' });
+    }
+});
+
+// Serve index.html for all other routes (SPA support)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+// Initialize and start server
+initializeDataFiles().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Cinema Management System running on http://localhost:${PORT}`);
+    });
+});
